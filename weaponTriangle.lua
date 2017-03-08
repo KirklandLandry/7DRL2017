@@ -1,4 +1,5 @@
 local weaponTilesetImage = love.graphics.newImage("assets/weaponIcons/glitch-icons-32x32.png")
+local smallWeaponTilesetImage = love.graphics.newImage("assets/weaponIcons/glitch-icons-16x16.png")
 local weaponTilesetPlacematImage = love.graphics.newImage("assets/weaponIcons/bad wpn triangle placemap 32px.png")
 local tileSize = 32
 
@@ -161,7 +162,8 @@ function newAttribute(existingAttributeList)
 
 	return {
 		index = {x = ix, y = iy},
-		quad = love.graphics.newQuad((ix-1) * tileSize, (iy-1) * tileSize, tileSize, tileSize, weaponTilesetImage:getWidth(), weaponTilesetImage:getHeight())
+		quad = love.graphics.newQuad((ix-1) * tileSize, (iy-1) * tileSize, tileSize, tileSize, weaponTilesetImage:getWidth(), weaponTilesetImage:getHeight()),
+		smallQuad = love.graphics.newQuad((ix-1) * 16, (iy-1) * 16, 16, 16, smallWeaponTilesetImage:getWidth(), smallWeaponTilesetImage:getHeight())
 	}
 end 
 
@@ -193,24 +195,58 @@ function WeaponTriangle:new()
 	o.weaknessValue = 0.75
 
 	weaponTilesetImage:setFilter("nearest", "nearest")
+	smallWeaponTilesetImage:setFilter("nearest", "nearest")
 	weaponTilesetPlacematImage:setFilter("nearest", "nearest")
 	return o
 end 
 
-function WeaponTriangle:drawAttributeA(x, y)
-	self:drawIcon(x, y, self.attributeA.index.x, self.attributeA.index.y, self.attributeA.quad)
+-- small is bool
+function WeaponTriangle:drawAttribute(x, y, attributeType, small)
+	AttributeTypes = {a = "a", b = "b", c = "c", null = "null"}
+
+	if(attributeType == AttributeTypes.a) then 
+		self:drawAttributeA(x, y, small)
+	elseif(attributeType == AttributeTypes.b) then 
+		self:drawAttributeB(x, y, small)
+	elseif(attributeType == AttributeTypes.c) then 
+		self:drawAttributeC(x, y, small)
+	else 
+
+	end 
 end 
 
-function WeaponTriangle:drawAttributeB(x, y)
-	self:drawIcon(x, y, self.attributeB.index.x, self.attributeB.index.y, self.attributeB.quad)
+
+function WeaponTriangle:drawAttributeA(x, y, small)
+	if small then 
+		self:drawIcon(x, y, self.attributeA.index.x, self.attributeA.index.y, self.attributeA.smallQuad, small)
+	else 
+		self:drawIcon(x, y, self.attributeA.index.x, self.attributeA.index.y, self.attributeA.quad, small)
+	end 
 end 
 
-function WeaponTriangle:drawAttributeC(x, y)
-	self:drawIcon(x, y, self.attributeC.index.x, self.attributeC.index.y, self.attributeC.quad)
+function WeaponTriangle:drawAttributeB(x, y, small)
+	if small then 
+		self:drawIcon(x, y, self.attributeB.index.x, self.attributeB.index.y, self.attributeB.smallQuad, small)
+	else 
+		self:drawIcon(x, y, self.attributeB.index.x, self.attributeB.index.y, self.attributeB.quad, small)
+	end 
 end 
 
-function WeaponTriangle:drawIcon(x, y, ix, iy, drawQuad)
-	love.graphics.draw(weaponTilesetImage, drawQuad, x, y)
+function WeaponTriangle:drawAttributeC(x, y, small)
+	if small then 
+		self:drawIcon(x, y, self.attributeC.index.x, self.attributeC.index.y, self.attributeC.smallQuad, small)
+	else 
+		self:drawIcon(x, y, self.attributeC.index.x, self.attributeC.index.y, self.attributeC.quad, small)
+	end 
+	
+end 
+
+function WeaponTriangle:drawIcon(x, y, ix, iy, drawQuad, small)
+	if small then 
+		love.graphics.draw(smallWeaponTilesetImage, drawQuad, x, y)
+	else 
+		love.graphics.draw(weaponTilesetImage, drawQuad, x, y)
+	end 
 end 
 
 function WeaponTriangle:drawTriangle(x, y)

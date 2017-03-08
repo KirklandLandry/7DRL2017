@@ -52,6 +52,11 @@ function Camera:getRoundedPosition()
 	return math.floor(self.x), math.floor(self.y)
 end 
 
+function Camera:getRelativePosition(x,y)
+	local crx, cry = self:getRoundedPosition()
+	return (math.floor(x) - crx), (math.floor(y) - cry)
+end 
+
 function Camera:centreOnPoint(px, py, pw, ph)
 	_ph = ph or pw
 	self.x = (px  - (  ((screenWidth / 2)) / self.scale) + (pw / 2 ))

@@ -86,7 +86,7 @@ function EnemyController:update(dt, playerMoved, playerAttacked, currentMap, pla
 				end 
 			end 
 			self:collisionCheck(etx, ety, ptx, pty, mvx, mvy, tileSize, currentMap, enemyList, player)
-		elseif inRangeOfPlayer(etx, ety, ptx, pty, 5) then 
+		elseif inRangeOfPlayer(etx, ety, ptx, pty, 10) then 
 			-- move randomly 
 			local rx, ry = math.random(-1, 1), math.random(-1,1)
 			local chance = math.random(0, 100)
@@ -105,8 +105,11 @@ function EnemyController:draw(tileSize, roundedCameraX, roundedCameraY)
 	if self.enemyType == EnemyType.log then
 		love.graphics.draw(self.logTilesetImage, self.logTilesetQuads[MoveDirs.down][self.animIndex], math.floor(self.character.x) - roundedCameraX, math.floor(self.character.y) - roundedCameraY)
 	elseif self.enemyType == EnemyType.npc then  
-		love.graphics.draw(self.npcTilesetImage, self.npcTilesetQuads[MoveDirs.down][self.animIndex], math.floor(self.character.x) - roundedCameraX, math.floor(self.character.y) - roundedCameraY)
-	end 
+		love.graphics.draw(self.npcTilesetImage, self.npcTilesetQuads[MoveDirs.down][self.animIndex], math.floor(self.character.x) - roundedCameraX, math.floor(self.character.y) - roundedCameraY)	
+	end
+	love.graphics.setColor(255, 255, 255, 220)
+	weaponTriangle:drawAttribute(math.floor(self.character.x + 8) - roundedCameraX, math.floor(self.character.y + 8) - roundedCameraY, self.character.weaponAttribute, true)
+	love.graphics.setColor(255, 255, 255, 255)
 end 
 
 function EnemyController:collisionCheck(enemyTileX, enemyTileY, playerTileX, playerTileY, xShift, yShift, tileSize, currentMap, enemyList, player)
