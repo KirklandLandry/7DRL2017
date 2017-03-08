@@ -98,6 +98,20 @@ end
 
 function EnemyController:collisionCheck(enemyTileX, enemyTileY, playerTileX, playerTileY, xShift, yShift, tileSize, currentMap, enemyList, player)
 	local moved = false
+
+
+		-- check for collision with enemy
+		for i=1,#enemyList do
+			local ex, ey = currentMap:getTilePosFromWorldPos(enemyList[i].character.x, enemyList[i].character.y, tileSize)
+			if enemyTileX + xShift == ex and enemyTileY + yShift == ey then 
+				-- initiate battle here
+				--self:attack(i, enemyList)
+				return moved 
+			end 
+		end
+
+
+
 	-- check for collision with walls
 	if currentMap:canMove(enemyTileX + xShift, enemyTileY + yShift) then 
 
@@ -112,15 +126,7 @@ function EnemyController:collisionCheck(enemyTileX, enemyTileY, playerTileX, pla
 
 		
 		
-		-- check for collision with enemy
-		--[[for i=1,#enemyList do
-			local ex, ey = currentMap:getTilePosFromWorldPos(enemyList[i].character.x, enemyList[i].character.y, tileSize)
-			if playerTileX + xShift == ex and playerTileY + yShift == ey then 
-				-- initiate battle here
-				self:attack(i, enemyList)
-				return moved 
-			end 
-		end]]
+
 	end
 	return moved
 end 
