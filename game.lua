@@ -79,6 +79,15 @@ function updateGame(dt)
 		end 
 	end 
 
+
+	for i=#damageTextList,1,-1 do
+		damageTextList[i].y = damageTextList[i].y - 100 * dt
+		damageTextList[i].alpha = damageTextList[i].alpha - 10
+		if damageTextList[i].alpha <= 0 then 
+			table.remove(damageTextList, i)
+		end 
+	end
+
 	
 end
 
@@ -93,11 +102,20 @@ function drawGame()
 	-- draw enemies 
 	for i=1,#enemyList do
 		enemyList[i]:draw(tileSize, camera:getRoundedPosition())
-		drawText(tostring(enemyList[i].character.health), 
+		--[[drawText(tostring(enemyList[i].character.health), 
 			math.floor(enemyList[i].character.x) - roundedCameraX,
-			math.floor(enemyList[i].character.y) - roundedCameraY - 16)
+			math.floor(enemyList[i].character.y) - roundedCameraY - 16)]]
 	end
 	
+
+	for i=#damageTextList,1,-1 do
+		love.graphics.setColor(255, 0, 0, damageTextList[i].apha)
+		drawText(tostring(damageTextList[i].damage), 
+			math.floor(damageTextList[i].x) - roundedCameraX,
+			math.floor(damageTextList[i].y) - roundedCameraY)
+	end
+
+
 	--drawText("heo)-=?", math.floor(playerController.character.x) - roundedCameraX, math.floor(playerController.character.y) - roundedCameraY)
 
 	-- draw the map shadow

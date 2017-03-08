@@ -55,8 +55,12 @@ end
 
 function PlayerController:attack(enemyIndex, enemyList)
 	local multiplier = weaponTriangle:getDamageMultiplier(self.character.weaponAttribute, enemyList[enemyIndex].character.weaponAttribute) 
-	local damage = self.character.strength * multiplier
-	enemyList[enemyIndex].character.health = enemyList[enemyIndex].character.health - damage
+	local dmg = self.character.strength * multiplier
+	enemyList[enemyIndex].character.health = enemyList[enemyIndex].character.health - dmg
+
+
+	table.insert(damageTextList, {x = enemyList[enemyIndex].character.x, y = enemyList[enemyIndex].character.y - 16, damage = dmg, alpha = 255})
+
 end 
 
 function PlayerController:collisionCheck(playerTileX, playerTileY, xShift, yShift, tileSize, currentMap, enemyList)
