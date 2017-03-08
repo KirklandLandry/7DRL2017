@@ -65,6 +65,7 @@ function EnemyController:update(dt, playerMoved, playerAttacked, currentMap, pla
 
 	if inRangeOfPlayer(etx, ety, ptx, pty, 1) and (playerAttacked) then 
 		-- attack the player 
+		--print(etx, ety)
 		local multiplier = weaponTriangle:getDamageMultiplier(self.character.weaponAttribute, player.character.weaponAttribute) 
 		local damage = self.character.strength * multiplier
 		player.character.health = player.character.health - damage
