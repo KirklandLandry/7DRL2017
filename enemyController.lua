@@ -56,12 +56,9 @@ function EnemyController:update(dt, playerMoved, playerAttacked, currentMap, pla
 		end 
 	end 
 
-
-
 	-- player and enemy tile positions
 	local etx, ety = currentMap:getTilePosFromWorldPos(self.character.x,self.character.y, tileSize)
 	local ptx, pty = currentMap:getTilePosFromWorldPos(player.character.x, player.character.y, tileSize)
-
 
 	if inRangeOfPlayer(etx, ety, ptx, pty, 1) and (playerAttacked) then 
 		-- attack the player 
@@ -71,18 +68,33 @@ function EnemyController:update(dt, playerMoved, playerAttacked, currentMap, pla
 		player.character.health = player.character.health - damage
 	end 
 
-
 	if playerMoved then 
 		if inRangeOfPlayer(etx, ety, ptx, pty, 3) then 
 			-- move towards player
-
 			local mvx = math.sign(ptx - etx)
 			local mvy = math.sign(pty - ety)
+			if math.abs(mvx) > math.abs(mvy) then 
+				mvy = 0 
+			elseif math.abs(mvy) > math.abs(mvx) then 
+				mvx = 0
+			else 
+				local chance = math.random(0, 100)
+				if chance > 50 then 
+					mvx = 0 
+				else 
+					mvy = 0
+				end 
+			end 
 			self:collisionCheck(etx, ety, ptx, pty, mvx, mvy, tileSize, currentMap, enemyList, player)
-
 		elseif inRangeOfPlayer(etx, ety, ptx, pty, 5) then 
 			-- move randomly 
 			local rx, ry = math.random(-1, 1), math.random(-1,1)
+			local chance = math.random(0, 100)
+			if chance > 50 then 
+				mvx = 0 
+			else 
+				mvy = 0
+			end 
 			self:collisionCheck(etx, ety, ptx, pty, rx, ry, tileSize, currentMap, enemyList, player)
 		end 	
 	end 
@@ -99,35 +111,24 @@ end
 
 function EnemyController:collisionCheck(enemyTileX, enemyTileY, playerTileX, playerTileY, xShift, yShift, tileSize, currentMap, enemyList, player)
 	local moved = false
-
-
-		-- check for collision with enemy
-		for i=1,#enemyList do
-			local ex, ey = currentMap:getTilePosFromWorldPos(enemyList[i].character.x, enemyList[i].character.y, tileSize)
-			if enemyTileX + xShift == ex and enemyTileY + yShift == ey then 
-				-- initiate battle here
-				--self:attack(i, enemyList)
-				return moved 
-			end 
-		end
-
-
-
+	-- check for collision with enemy
+	for i=1,#enemyList do
+		local ex, ey = currentMap:getTilePosFromWorldPos(enemyList[i].character.x, enemyList[i].character.y, tileSize)
+		if enemyTileX + xShift == ex and enemyTileY + yShift == ey then 
+			-- initiate battle here
+			--self:attack(i, enemyList)
+			return moved 
+		end 
+	end
 	-- check for collision with walls
 	if currentMap:canMove(enemyTileX + xShift, enemyTileY + yShift) then 
-
 		-- don't move into the player 
 		if enemyTileX + xShift == playerTileX and enemyTileY + yShift == playerTileY then 
-
 		else 
 			self.character.y = self.character.y + (tileSize * yShift)
 			self.character.x = self.character.x + (tileSize * xShift)
 			moved = true
 		end  
-
-		
-		
-
 	end
 	return moved
 end 

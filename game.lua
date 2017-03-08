@@ -79,7 +79,6 @@ function updateGame(dt)
 		end 
 	end 
 
-
 	for i=#damageTextList,1,-1 do
 		damageTextList[i].y = damageTextList[i].y - 100 * dt
 		damageTextList[i].alpha = damageTextList[i].alpha - 10
@@ -88,7 +87,6 @@ function updateGame(dt)
 		end 
 	end
 
-	
 end
 
 function drawGame()
