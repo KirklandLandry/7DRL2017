@@ -28,7 +28,7 @@ function loadGame()
 	-- create player controller and center camera on it
 	playerController = PlayerController:new(currentMap:getRandPosition(tileSize))
   	camera:centreOnPoint(playerController.character.x, playerController.character.y, tileSize, tileSize)
-	camera:lockToEdgeBoundary(currentMap.width, currentMap.height, tileSize)
+	--camera:lockToEdgeBoundary(currentMap.width, currentMap.height, tileSize)
 
 	for i=1,30 do	
 		local px, py = currentMap:getTilePosFromWorldPos(playerController.character.x, playerController.character.y, tileSize)
@@ -63,7 +63,7 @@ function updateGame(dt)
 		newMap(61, 61)
 	end 
 	-- prevent camera from scrolling past map boundary
-	camera:lockToEdgeBoundary(currentMap.width, currentMap.height, tileSize)
+	--camera:lockToEdgeBoundary(currentMap.width, currentMap.height, tileSize)
 	camera:update(dt)
 	-- update tilemap position if the camera has moved 
 	local tileX, tileY = camera:getTilePos(tileSize)
@@ -120,8 +120,21 @@ function drawGame()
 	if not getKeyDown("c") then currentMap:drawShadow(camera, tileSize, camera:getTilePos(tileSize)) end
 	-- never want UI element to be affected by game scaling
 	love.graphics.reset()
-	love.graphics.scale(2, 2)
+	love.graphics.setColor(255,255,255,180)
+	--love.graphics.scale(1.3)
 	weaponTriangle:drawTriangle(0,0)
+	--love.graphics.scale(1)
+	drawText("todays weapons are...", 0, 96 + 8)
+	--drawText("_____________________", 0, 96 + 10)
+	--love.graphics.scale(1.25)
+	weaponTriangle:drawAttributeA(0, 128)
+	weaponTriangle:drawAttributeB(0, 160)
+	weaponTriangle:drawAttributeC(0, 192)
+	drawText(weaponTriangle:getAttributeName(AttributeTypes.a), 32, 128 + 8)
+	drawText(weaponTriangle:getAttributeName(AttributeTypes.b), 32, 160 + 8)
+	drawText(weaponTriangle:getAttributeName(AttributeTypes.c), 32, 192 + 8)
+	resetColor()
+
 end
 
 function love.wheelmoved(x,y)
