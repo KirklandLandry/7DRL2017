@@ -10,6 +10,7 @@ require "weaponTriangle"
 require "character"
 require "playerController"
 require "enemyController"
+require "sceneGameplay"
 -- libs
 require "libs/maid64"
 -- data structures 
