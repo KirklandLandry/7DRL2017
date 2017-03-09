@@ -32,6 +32,7 @@ end
 -- for now, force 32 tile menus. 
 -- last 2 are optional
 -- x and y are pixel specific, w,h are tile specific. not ideal
+-- could automatically determine width and (centre) position if you get the length of the biggest string in textList
 function drawMenu(x,y,w,h, textList, textCursorOption)
 	-- draw top row 
 	love.graphics.draw(menuTilesetImage, menuTilesetQuads["menu"]["topLeft"], x, y)
@@ -55,13 +56,46 @@ function drawMenu(x,y,w,h, textList, textCursorOption)
 	love.graphics.draw(menuTilesetImage, menuTilesetQuads["menu"]["bottomRight"], x + ((w-1)*32), y + (32*(h-1)))
 
 	-- now draw text and cursor (if available)
+	local xShift = 16
+	if textCursorOption ~= nil then 
+		xShift = 32
+	end 
 
+	-- can use yShift to put things on next line if it's too long. for now, just make sure something isn't too long
+	local yShift = 0
 	if textList ~= nil then 
+		-- for the given list of text 
+		for i=1,#textList do 
+			--for each char in the current one
+			for n = 1, #textList[i] do
+			    local c = textList[i]:sub(n,n)
+		   		drawText(c, x + xShift + ((n-1)*16), y + 16 + ((i-1)*32))
+			end
+		end 
+	end 
 
+	if textCursorOption ~= nil then 
+		love.graphics.draw(menuTilesetImage, menuTilesetQuads["cursor"], x, y + 8 + ((textCursorOption-1)*32 )	)
 	end 
 
 end 
 
 function drawCursor()
 	love.graphics.draw(menuTilesetImage, menuTilesetQuads["cursor"], 0, 13)
+end 
+
+function packTextIntoList(...)
+	--[[local result = {}
+	for i,v in ipairs(arg) do
+		print(i)
+    	table.insert(result, tostring(v))
+  	end]]
+  	local result = {...}
+
+  	for i=1,#result do
+  		--print(result[i])
+  		result[i] = tostring(result[i])
+  	end
+
+  	return result
 end 

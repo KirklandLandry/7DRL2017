@@ -17,7 +17,7 @@ function loadGame()
 	scene:init()
 	sceneStack:push(scene)
 
-	local scene2 = SceneOkBox:new()
+	local scene2 = SceneOkBox:new(packTextIntoList("frog fractions", "is", "real"))
 	scene2:init()
 	sceneStack:push(scene2)
 
