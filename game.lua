@@ -117,38 +117,8 @@ function drawGame()
 
 	-- draw the map shadow
 	if not getKeyDown("c") then currentMap:drawShadow(camera, tileSize, camera:getTilePos(tileSize)) end
-	-- never want UI element to be affected by game scaling
-	love.graphics.reset()
-	love.graphics.setColor(255,255,255,210)
-	--love.graphics.scale(1.3)
 
-	-- maybe write how each line relates you player beside this 
-	-- ie: if first line is A beats B and player is A, write GOOD 
-	-- so GOOD, BAD, EQUAL
-	weaponTriangle:drawTriangle(0,128 + 8)
-	--love.graphics.scale(1)
-	drawText("todays weapons are...", 0, 0 + 8)
-	--drawText("_____________________", 0, 96 + 10)
-	--love.graphics.scale(1.25)
-	weaponTriangle:drawAttributeA(0, 32)
-	weaponTriangle:drawAttributeB(0, 64)
-	weaponTriangle:drawAttributeC(0, 96)
-	drawText(weaponTriangle:getAttributeName(AttributeTypes.a), 34, 32 + 8)
-	drawText(weaponTriangle:getAttributeName(AttributeTypes.b), 34, 64 + 8)
-	drawText(weaponTriangle:getAttributeName(AttributeTypes.c), 34, 96 + 8)
-	
-
-	--weaponTriangle:drawAttribute(0, screenHeight - 32, playerController.character.weaponAttribute)
-	drawText("weapon:", 0, screenHeight - 32)
-	weaponTriangle:drawAttribute(112, screenHeight - 32 - 8, playerController.character.weaponAttribute)
-	drawText(weaponTriangle:getAttributeName(playerController.character.weaponAttribute), 112 + 36, screenHeight - 32)
-
-	drawText("hp:"..tostring(playerController.character.health).."/"..tostring(playerController.character.maxHealth), 2, screenHeight - 96)
-	drawText("xp:"..tostring(playerController.character.currentXP).."/"..tostring(playerController.character.nextLevelXP), 2, screenHeight - 64)
-	resetColor()
-
-
-
+	drawUI()
 	
 end
 
@@ -193,11 +163,12 @@ function newMap(width, height)
 		local px, py = currentMap:getTilePosFromWorldPos(playerController.character.x, playerController.character.y, tileSize)
 		local rx, ry = currentMap:getRandPositionExcludingRadius(tileSize, enemyList, 10, px, py)
 		local rand = math.random(0, 100)
-		if rand < 60 then 
+		if rand < 70 then 
 			table.insert(enemyList, EnemyController:new(10, EnemyType.log, rx, ry))
 		else 
 			table.insert(enemyList, EnemyController:new(10, EnemyType.npc, rx, ry))
 		end 
+		enemyList[i].character:adjustToLevel(playerController.character.level)
 	end
 end 
 
@@ -258,4 +229,41 @@ function drawText(word, x, y)
 		love.graphics.draw(textTileset, textTilesetQuads[c], x + (counter*16), y)
 		counter = counter + 1
 	end
+end 
+
+
+function drawUI()
+		-- never want UI element to be affected by game scaling
+	love.graphics.reset()
+	love.graphics.setColor(255,255,255,210)
+	--love.graphics.scale(1.3)
+
+	-- maybe write how each line relates you player beside this 
+	-- ie: if first line is A beats B and player is A, write GOOD 
+	-- so GOOD, BAD, EQUAL
+	weaponTriangle:drawTriangle(0,128 + 8)
+	--love.graphics.scale(1)
+	drawText("todays weapons are...", 0, 0 + 8)
+	--drawText("_____________________", 0, 96 + 10)
+	--love.graphics.scale(1.25)
+	weaponTriangle:drawAttributeA(0, 32)
+	weaponTriangle:drawAttributeB(0, 64)
+	weaponTriangle:drawAttributeC(0, 96)
+	drawText(weaponTriangle:getAttributeName(AttributeTypes.a), 34, 32 + 8)
+	drawText(weaponTriangle:getAttributeName(AttributeTypes.b), 34, 64 + 8)
+	drawText(weaponTriangle:getAttributeName(AttributeTypes.c), 34, 96 + 8)
+	
+
+	--weaponTriangle:drawAttribute(0, screenHeight - 32, playerController.character.weaponAttribute)
+	
+	drawText("weapon:", 0, screenHeight - 32)
+	weaponTriangle:drawAttribute(112, screenHeight - 32 - 8, playerController.character.weaponAttribute)
+	drawText(weaponTriangle:getAttributeName(playerController.character.weaponAttribute), 112 + 36, screenHeight - 32)
+
+	drawText("lvl:"..tostring(playerController.character.level), 2, screenHeight - 128)
+	drawText("hp:"..tostring(playerController.character.health).."/"..tostring(playerController.character.maxHealth), 2, screenHeight - 96)
+	drawText("xp:"..tostring(playerController.character.currentXP).."/"..tostring(playerController.character.nextLevelXP), 2, screenHeight - 64)
+	resetColor()
+
+
 end 

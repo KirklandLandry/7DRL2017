@@ -4,6 +4,7 @@ function Character:new(x, y, health, weaponAttribute)
 	setmetatable(o, self)
 	self.__index = self
 	
+	o.level = 1
 	o.x = x 
 	o.y = y
 	o.health = health
@@ -15,6 +16,13 @@ function Character:new(x, y, health, weaponAttribute)
 	o.nextLevelXP = 50
 	return o
 end 
+
+function Character:adjustToLevel(lvl)
+	self.level = lvl 
+	self.health = self.health + lvl 
+	self.maxHealth = self.maxHealth + lvl 
+	self.strength = self.strength + (lvl/2)
+end
 
 function Character:move(xInc,yInc)
 	self.x = self.x + xInc 
@@ -49,6 +57,8 @@ function Character:incrementXP(enemyType)
 		-- increase damage 
 		self.strength = self.strength + math.random(1,2)
 		-- increase health 
-		self.maxHealth = self.maxHealth + math.random(0, 3)
+		self.maxHealth = self.maxHealth + math.random(1, 3)
+		-- increase level
+		self.level = self.level + 1
 	end 
 end 
