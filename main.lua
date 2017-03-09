@@ -5,6 +5,8 @@ require "timer"
 require "camera"
 require "textDraw"
 -- game specific
+require "sceneOkBox"
+require "menuDrawer"
 require "map"
 require "weaponTriangle"
 require "character"
