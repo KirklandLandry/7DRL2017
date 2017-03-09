@@ -5,7 +5,7 @@ function PlayerController:new(x, y)
 	setmetatable(o, self)
 	self.__index = self
 	
-	o.character = Character:new(x,y, 30, weaponTriangle:getRandomAttribute())
+	o.character = Character:new(x,y, 50, weaponTriangle:getRandomAttribute())
 	o.moveTimer = Timer:new(0.15, TimerModes.repeating)
 	o.prevDir = nil
 	o.animDir = MoveDirs.down

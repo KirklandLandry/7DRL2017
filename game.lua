@@ -121,7 +121,11 @@ function drawGame()
 	love.graphics.reset()
 	love.graphics.setColor(255,255,255,210)
 	--love.graphics.scale(1.3)
-	weaponTriangle:drawTriangle(0,128)
+
+	-- maybe write how each line relates you player beside this 
+	-- ie: if first line is A beats B and player is A, write GOOD 
+	-- so GOOD, BAD, EQUAL
+	weaponTriangle:drawTriangle(0,128 + 8)
 	--love.graphics.scale(1)
 	drawText("todays weapons are...", 0, 0 + 8)
 	--drawText("_____________________", 0, 96 + 10)

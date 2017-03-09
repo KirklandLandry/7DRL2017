@@ -192,8 +192,8 @@ function WeaponTriangle:new()
 	--print( weaponNames[o.attributeB.index.y][o.attributeB.index.x] )
 	--print( weaponNames[o.attributeC.index.y][o.attributeC.index.x] )
 
-	o.strengthValue = 1.25
-	o.weaknessValue = 0.75
+	o.strengthValue = 1.5
+	o.weaknessValue = 0.5
 
 	weaponTilesetImage:setFilter("nearest", "nearest")
 	smallWeaponTilesetImage:setFilter("nearest", "nearest")

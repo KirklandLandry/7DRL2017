@@ -35,7 +35,7 @@ function Character:incrementXP(enemyType)
 	if enemyType == EnemyType.log then 
 		self.currentXP = self.currentXP + math.random(10, 15)
 	elseif enemyType == EnemyType.npc then 
-		self.currentXP = self.currentXP + math.random(15, 20)
+		self.currentXP = self.currentXP + math.random(25, 35)
 	end 
 
 	-- if you leveled up 
@@ -44,11 +44,11 @@ function Character:incrementXP(enemyType)
 		self.currentXP = self.currentXP - self.nextLevelXP
 		self.nextLevelXP = self.nextLevelXP + 5
 		-- recover some health
-		self.health = self.health + math.random(5,8)
+		self.health = self.health + math.random(0,5)
 		if self.health > self.maxHealth then self.health = self.maxHealth end
 		-- increase damage 
-		self.strength = self.strength + math.random(1,3)
-		-- maybe increase health 
+		self.strength = self.strength + math.random(1,2)
+		-- increase health 
 		self.maxHealth = self.maxHealth + math.random(0, 3)
 	end 
 end 

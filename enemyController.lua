@@ -7,6 +7,7 @@ function EnemyController:new(health, enemyType, x, y)
 	self.__index = self
 	if enemyType == EnemyType.log then 
 		o.character = Character:new(x, y, 10, AttributeTypes.null)
+		o.character.strengthRange = 2
 	else 
 		o.character = Character:new(x, y, 10, weaponTriangle:getRandomAttribute())
 	end 
@@ -48,6 +49,9 @@ function inRangeOfPlayer(enemyTileX, enemyTileY, playerTileX, playerTileY, range
 end 
 
 function EnemyController:update(dt, playerMoved, playerAttacked, currentMap, player, tileSize, enemyList)
+	-- can't update if you're dead
+	if self.character.health <= 0 then return end 
+
 	if(self.animTimer:isComplete(dt)) then 
 		self.animIndex = self.animIndex + 1 
 		if self.animIndex > 4 then 
