@@ -47,7 +47,6 @@ function inRangeOfPlayer(enemyTileX, enemyTileY, playerTileX, playerTileY, range
 	return (math.sqrt(math.pow(enemyTileX - playerTileX,2) + math.pow(enemyTileY - playerTileY, 2)) <= range)
 end 
 
-
 function EnemyController:update(dt, playerMoved, playerAttacked, currentMap, player, tileSize, enemyList)
 	if(self.animTimer:isComplete(dt)) then 
 		self.animIndex = self.animIndex + 1 
@@ -101,14 +100,16 @@ function EnemyController:update(dt, playerMoved, playerAttacked, currentMap, pla
 
 end 
 
-function EnemyController:draw(tileSize, roundedCameraX, roundedCameraY)
+function EnemyController:draw(tileSize, camera)
+	local relx, rely = camera:getRelativePositionFromCharacter(self.character)
+
 	if self.enemyType == EnemyType.log then
-		love.graphics.draw(self.logTilesetImage, self.logTilesetQuads[MoveDirs.down][self.animIndex], math.floor(self.character.x) - roundedCameraX, math.floor(self.character.y) - roundedCameraY)
+		love.graphics.draw(self.logTilesetImage, self.logTilesetQuads[MoveDirs.down][self.animIndex], relx, rely)
 	elseif self.enemyType == EnemyType.npc then  
-		love.graphics.draw(self.npcTilesetImage, self.npcTilesetQuads[MoveDirs.down][self.animIndex], math.floor(self.character.x) - roundedCameraX, math.floor(self.character.y) - roundedCameraY)	
+		love.graphics.draw(self.npcTilesetImage, self.npcTilesetQuads[MoveDirs.down][self.animIndex], relx, rely)	
 	end
 	love.graphics.setColor(255, 255, 255, 220)
-	weaponTriangle:drawAttribute(math.floor(self.character.x + 8) - roundedCameraX, math.floor(self.character.y + 8) - roundedCameraY, self.character.weaponAttribute, true)
+	weaponTriangle:drawAttribute(relx + 8, rely + 8, self.character.weaponAttribute, true)
 	love.graphics.setColor(255, 255, 255, 255)
 end 
 
@@ -118,18 +119,14 @@ function EnemyController:collisionCheck(enemyTileX, enemyTileY, playerTileX, pla
 	for i=1,#enemyList do
 		local ex, ey = currentMap:getTilePosFromWorldPos(enemyList[i].character.x, enemyList[i].character.y, tileSize)
 		if enemyTileX + xShift == ex and enemyTileY + yShift == ey then 
-			-- initiate battle here
-			--self:attack(i, enemyList)
 			return moved 
 		end 
 	end
 	-- check for collision with walls
 	if currentMap:canMove(enemyTileX + xShift, enemyTileY + yShift) then 
 		-- don't move into the player 
-		if enemyTileX + xShift == playerTileX and enemyTileY + yShift == playerTileY then 
-		else 
-			self.character.y = self.character.y + (tileSize * yShift)
-			self.character.x = self.character.x + (tileSize * xShift)
+		if enemyTileX + xShift ~= playerTileX or enemyTileY + yShift ~= playerTileY then 
+			self.character:move(tileSize * xShift, tileSize * yShift)
 			moved = true
 		end  
 	end

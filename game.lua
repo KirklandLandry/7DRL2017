@@ -99,7 +99,7 @@ function drawGame()
 	playerController:draw(tileSize, camera:getRoundedPosition())
 	-- draw enemies 
 	for i=1,#enemyList do
-		enemyList[i]:draw(tileSize, camera:getRoundedPosition())
+		enemyList[i]:draw(tileSize, camera)
 		--[[drawText(tostring(enemyList[i].character.health), 
 			math.floor(enemyList[i].character.x) - roundedCameraX,
 			math.floor(enemyList[i].character.y) - roundedCameraY - 16)]]
@@ -134,7 +134,6 @@ function drawGame()
 	drawText(weaponTriangle:getAttributeName(AttributeTypes.b), 32, 160 + 8)
 	drawText(weaponTriangle:getAttributeName(AttributeTypes.c), 32, 192 + 8)
 	resetColor()
-
 end
 
 function love.wheelmoved(x,y)

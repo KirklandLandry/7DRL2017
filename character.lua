@@ -12,3 +12,8 @@ function Character:new(x, y, health, weaponAttribute)
 	
 	return o
 end 
+
+function Character:move(xInc,yInc)
+	self.x = self.x + xInc 
+	self.y = self.y + yInc
+end 

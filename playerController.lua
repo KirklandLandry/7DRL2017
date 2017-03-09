@@ -78,8 +78,7 @@ function PlayerController:collisionCheck(playerTileX, playerTileY, xShift, yShif
 				return moved, attacked 
 			end 
 		end
-		self.character.y = self.character.y + (tileSize * yShift)
-		self.character.x = self.character.x + (tileSize * xShift)
+		self.character:move(tileSize * xShift, tileSize * yShift)
 		moved = true
 	end
 	return moved, attacked
