@@ -17,11 +17,11 @@ function Character:new(x, y, health, weaponAttribute)
 	return o
 end 
 
-function Character:adjustToLevel(lvl)
-	self.level = lvl 
-	self.health = self.health + lvl 
-	self.maxHealth = self.maxHealth + lvl 
-	self.strength = self.strength + (lvl/2)
+function Character:adjustToLevel(lvl, floor)
+	self.level = lvl + floor
+	self.health = self.health + lvl + floor
+	self.maxHealth = self.maxHealth + lvl + floor
+	self.strength = self.strength + ((lvl + floor)/2)
 end
 
 function Character:move(xInc,yInc)

@@ -3,6 +3,7 @@ require "framerateLock"
 require "game" 
 require "timer"
 require "camera"
+require "textDraw"
 -- game specific
 require "map"
 require "weaponTriangle"
