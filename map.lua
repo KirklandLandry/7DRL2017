@@ -1,5 +1,5 @@
 local blackTile = love.graphics.newImage("assets/gfx 32x32/black.png")
-
+local stairTile = love.graphics.newImage("assets/gfx 32x32/stairway 32x32.png")
 local tilesetImage
 local tilesetQuads
 local tilesetBatch
@@ -19,6 +19,10 @@ function Map:new(mapWidth, mapHeight, tileSize, camera)
 	o.emptyCode = 0
 	o.minShadow = 1 
 	o.maxShadow = 253
+	o.tileSize = tileSize
+	o.stairway = nil
+
+	stairTile:setFilter("nearest", "nearest")
 
 	tilesetImage = love.graphics.newImage("assets/gfx 32x32/cave.png")
 	tilesetImage:setFilter("nearest", "nearest")
@@ -71,6 +75,9 @@ function Map:new(mapWidth, mapHeight, tileSize, camera)
     	tilesetImage:getWidth(), tilesetImage:getHeight())
 
 
+	tilesetQuads["stairway"] = love.graphics.newQuad(13 * tileSize, 7 * tileSize, tileSize, tileSize,
+    	tilesetImage:getWidth(), tilesetImage:getHeight())
+
 	local displayWidthInTiles, displayHeightInTiles = camera:getViewportSizeInTiles(tileSize)
   	tilesetBatch = love.graphics.newSpriteBatch(tilesetImage, 
   		(displayWidthInTiles + camera.displayBuffer) * (displayHeightInTiles + camera.displayBuffer))
@@ -87,7 +94,34 @@ function Map:generate(width, height)
 
 	self:initFilled()
 	self:tunneler()
+
+	--self:placeStairway()
+
 end
+
+function Map:placeStairway(cx, cy)
+	--local rx, ry = self:getRandPosition(self.tileSize)
+	local rx, ry = self:getRandPositionExcludingRadius(self.tileSize, nil, 10, cx, cy)
+	local tx, ty = self:getTilePosFromWorldPos(rx, ry, self.tileSize)
+	self.stairway = {
+		tileX = tx,
+		tileY = ty,
+		worldX = rx,
+		worldY = ry
+	}
+end 
+
+function Map:onStairway(tx, ty)
+	if tx == self.stairway.tileX and ty == self.stairway.tileY then 
+		return true 
+	else 
+		return false 
+	end 
+end 
+
+--[[function Map:drawStairway()
+	love.graphics.draw(stairTile, , y)
+end ]]
 
 function Map:initEmpty()
 	for y=1,self.height do
@@ -336,7 +370,14 @@ function updateMapSpritebatch(firstTileX, firstTileY, spritebatch, camera, tileS
 		for x=1,(displayWidthInTiles + camera.displayBuffer) do
 			-- don't draw tiles out of array bounds
 			if not currentMap:outOfBounds(x + firstTileX, y + firstTileY) then
-				if currentMap.data[y + firstTileY][x + firstTileX] == currentMap.emptyCode then 
+				if y + firstTileY == currentMap.stairway.tileY and x + firstTileX == currentMap.stairway.tileX then
+
+					spritebatch:add(tilesetQuads["stairway"], 
+						((x-1)*tileSize), 
+						((y-1)*tileSize))
+
+
+				elseif currentMap.data[y + firstTileY][x + firstTileX] == currentMap.emptyCode then 
 					spritebatch:add(tilesetQuads["floor"], 
 						((x-1)*tileSize), 
 						((y-1)*tileSize))

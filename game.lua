@@ -9,10 +9,8 @@ local currentMap = nil
 weaponTriangle = nil 
 
 local enemyList = {}
-
-
 damageTextList = {}
-
+local currentFloor = 1
 
 function loadGame()
 	tileSize = globalTileSize
@@ -25,11 +23,15 @@ function loadGame()
 	local tileX, tileY = camera:getTilePos(tileSize)
 	currentMap.prevTileX = tileX
 	currentMap.prevTileY = tileY
-	currentMap:updateMapSpritebatch(tileX, tileY, camera, tileSize)
+	
 	-- create player controller and center camera on it
 	playerController = PlayerController:new(currentMap:getRandPosition(tileSize))
   	camera:centreOnPoint(playerController.character.x, playerController.character.y, tileSize, tileSize)
 	--camera:lockToEdgeBoundary(currentMap.width, currentMap.height, tileSize)
+	currentMap:placeStairway(currentMap:getTilePosFromWorldPos(playerController.character.x, playerController.character.y, tileSize))
+currentMap:updateMapSpritebatch(tileX, tileY, camera, tileSize)
+
+	currentFloor = 1
 
 	local px, py = currentMap:getTilePosFromWorldPos(playerController.character.x, playerController.character.y, tileSize)
 	for i=1,30 do	
@@ -52,6 +54,11 @@ function updateGame(dt)
 	camera:moveManually(dt)
 	-- move player with wasd
 	local playerMoved, playerAttacked = playerController:update(tileSize, dt, currentMap, enemyList)
+	-- if you're on a stairway, move to next floor
+	if currentMap:onStairway(currentMap:getTilePosFromWorldPos(playerController.character.x, playerController.character.y, tileSize)) then 
+		newMap(61, 61)
+		currentFloor = currentFloor + 1
+	end 
 	-- illuminate area around player
 	currentMap:illuminate(5, currentMap:getTilePosFromWorldPos(playerController.character.x, playerController.character.y, tileSize))
 	-- make camera follow player 
@@ -147,13 +154,13 @@ function newMap(width, height)
 	local tileX, tileY = camera:getTilePos(tileSize)
 	currentMap.prevTileX = tileX
 	currentMap.prevTileY = tileY
-	currentMap:updateMapSpritebatch(tileX, tileY, camera, tileSize)
-
+	
 	playerController.character.x, playerController.character.y = currentMap:getRandPosition(tileSize)
 
   	camera:centreOnPoint(playerController.character.x, playerController.character.y, tileSize, tileSize)
 	camera:lockToEdgeBoundary(currentMap.width, currentMap.height, tileSize)
-
+currentMap:placeStairway(currentMap:getTilePosFromWorldPos(playerController.character.x, playerController.character.y, tileSize))
+currentMap:updateMapSpritebatch(tileX, tileY, camera, tileSize)
 
 	for i=#enemyList,1,-1 do
 		table.remove(enemyList, i)
@@ -171,7 +178,6 @@ function newMap(width, height)
 		enemyList[i].character:adjustToLevel(playerController.character.level)
 	end
 end 
-
 
 
 
@@ -260,6 +266,7 @@ function drawUI()
 	weaponTriangle:drawAttribute(112, screenHeight - 32 - 8, playerController.character.weaponAttribute)
 	drawText(weaponTriangle:getAttributeName(playerController.character.weaponAttribute), 112 + 36, screenHeight - 32)
 
+	drawText("bfloor:"..tostring(currentFloor), 2, screenHeight - 160)
 	drawText("lvl:"..tostring(playerController.character.level), 2, screenHeight - 128)
 	drawText("hp:"..tostring(playerController.character.health).."/"..tostring(playerController.character.maxHealth), 2, screenHeight - 96)
 	drawText("xp:"..tostring(playerController.character.currentXP).."/"..tostring(playerController.character.nextLevelXP), 2, screenHeight - 64)
