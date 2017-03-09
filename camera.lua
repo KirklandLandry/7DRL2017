@@ -64,7 +64,7 @@ end
 
 function Camera:centreOnPoint(px, py, pw, ph)
 	_ph = ph or pw
-	self.x = (px  - (  ((screenWidth / 2)) / self.scale) + (pw / 2 ))
+	self.x = (px - (screenWidth  / 2 / self.scale) + (pw / 2 ))
 	self.y = (py - (screenHeight / 2 / self.scale) + (_ph / 2 ))
 end 
 

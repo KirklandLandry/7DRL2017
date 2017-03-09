@@ -18,6 +18,7 @@ function loadGame()
 	tileSize = globalTileSize
 	weaponTriangle = WeaponTriangle:new()
 	camera = Camera:new()
+	camera.scale = 2
 	-- create and generate new map. only need to call new once at start.
 	currentMap = Map:new(21, 29, tileSize, camera)
 	currentMap:generate(61, 61)
@@ -30,8 +31,8 @@ function loadGame()
   	camera:centreOnPoint(playerController.character.x, playerController.character.y, tileSize, tileSize)
 	--camera:lockToEdgeBoundary(currentMap.width, currentMap.height, tileSize)
 
+	local px, py = currentMap:getTilePosFromWorldPos(playerController.character.x, playerController.character.y, tileSize)
 	for i=1,30 do	
-		local px, py = currentMap:getTilePosFromWorldPos(playerController.character.x, playerController.character.y, tileSize)
 		local rx, ry = currentMap:getRandPositionExcludingRadius(tileSize, enemyList, 10, px, py)
 		local rand = math.random(0, 100)
 		if rand < 60 then 
@@ -40,7 +41,6 @@ function loadGame()
 			table.insert(enemyList, EnemyController:new(10, EnemyType.npc, rx, ry))
 		end 
 	end
-
 	initText()
 end
 
@@ -86,7 +86,6 @@ function updateGame(dt)
 			table.remove(damageTextList, i)
 		end 
 	end
-
 end
 
 function drawGame()
@@ -120,20 +119,33 @@ function drawGame()
 	if not getKeyDown("c") then currentMap:drawShadow(camera, tileSize, camera:getTilePos(tileSize)) end
 	-- never want UI element to be affected by game scaling
 	love.graphics.reset()
-	love.graphics.setColor(255,255,255,180)
+	love.graphics.setColor(255,255,255,210)
 	--love.graphics.scale(1.3)
-	weaponTriangle:drawTriangle(0,0)
+	weaponTriangle:drawTriangle(0,128)
 	--love.graphics.scale(1)
-	drawText("todays weapons are...", 0, 96 + 8)
+	drawText("todays weapons are...", 0, 0 + 8)
 	--drawText("_____________________", 0, 96 + 10)
 	--love.graphics.scale(1.25)
-	weaponTriangle:drawAttributeA(0, 128)
-	weaponTriangle:drawAttributeB(0, 160)
-	weaponTriangle:drawAttributeC(0, 192)
-	drawText(weaponTriangle:getAttributeName(AttributeTypes.a), 32, 128 + 8)
-	drawText(weaponTriangle:getAttributeName(AttributeTypes.b), 32, 160 + 8)
-	drawText(weaponTriangle:getAttributeName(AttributeTypes.c), 32, 192 + 8)
+	weaponTriangle:drawAttributeA(0, 32)
+	weaponTriangle:drawAttributeB(0, 64)
+	weaponTriangle:drawAttributeC(0, 96)
+	drawText(weaponTriangle:getAttributeName(AttributeTypes.a), 34, 32 + 8)
+	drawText(weaponTriangle:getAttributeName(AttributeTypes.b), 34, 64 + 8)
+	drawText(weaponTriangle:getAttributeName(AttributeTypes.c), 34, 96 + 8)
+	
+
+	--weaponTriangle:drawAttribute(0, screenHeight - 32, playerController.character.weaponAttribute)
+	drawText("weapon:", 0, screenHeight - 32)
+	weaponTriangle:drawAttribute(112, screenHeight - 32 - 8, playerController.character.weaponAttribute)
+	drawText(weaponTriangle:getAttributeName(playerController.character.weaponAttribute), 112 + 36, screenHeight - 32)
+
+	drawText("hp:"..tostring(playerController.character.health).."/"..tostring(playerController.character.maxHealth), 2, screenHeight - 96)
+	drawText("xp:"..tostring(playerController.character.currentXP).."/"..tostring(playerController.character.nextLevelXP), 2, screenHeight - 64)
 	resetColor()
+
+
+
+	
 end
 
 function love.wheelmoved(x,y)
@@ -150,6 +162,9 @@ function love.wheelmoved(x,y)
 	currentMap.prevTileX = tileX
 	currentMap.prevTileY = tileY
 	currentMap:updateMapSpritebatch(tileX, tileY, camera, tileSize)
+
+
+	print(camera.scale)
 end 
 
 
@@ -185,11 +200,6 @@ end
 
 
 
-
-
-
-
-
 local textTileset = nil 
 local textTilesetQuads = nil
 
@@ -213,6 +223,7 @@ function initText()
 	textTilesetQuads["%"] = love.graphics.newQuad((26*16) + ((6)*16)	, 16, 16, 16, tilesetWidth, tilesetHeight)
 	textTilesetQuads["("] = love.graphics.newQuad((26*16) + ((9)*16)	, 16, 16, 16, tilesetWidth, tilesetHeight)
 	textTilesetQuads[")"] = love.graphics.newQuad((26*16) + ((10)*16)	, 16, 16, 16, tilesetWidth, tilesetHeight)
+	textTilesetQuads["/"] = love.graphics.newQuad((26*16) + ((5)*16)	, 32, 16, 16, tilesetWidth, tilesetHeight)
 	textTilesetQuads[":"] = love.graphics.newQuad((26*16)				, 48, 16, 16, tilesetWidth, tilesetHeight)
 	textTilesetQuads[","] = love.graphics.newQuad((26*16) + ((2)*16)	, 48, 16, 16, tilesetWidth, tilesetHeight)
 	textTilesetQuads["-"] = love.graphics.newQuad((26*16) + ((6)*16)	, 48, 16, 16, tilesetWidth, tilesetHeight)

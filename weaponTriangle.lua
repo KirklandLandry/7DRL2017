@@ -1,6 +1,7 @@
 local weaponTilesetImage = love.graphics.newImage("assets/weaponIcons/glitch-icons-32x32.png")
 local smallWeaponTilesetImage = love.graphics.newImage("assets/weaponIcons/glitch-icons-16x16.png")
 local weaponTilesetPlacematImage = love.graphics.newImage("assets/weaponIcons/bad wpn triangle placemap 32px.png")
+local weaponTilesetPlacematImage2 = love.graphics.newImage("assets/weaponIcons/bad wpn triangle placemap 2.png")
 local tileSize = 32
 
 AttributeTypes = {a = "a", b = "b", c = "c", null = "null"}
@@ -250,10 +251,21 @@ function WeaponTriangle:drawIcon(x, y, ix, iy, drawQuad, small)
 end 
 
 function WeaponTriangle:drawTriangle(x, y)
-	love.graphics.draw(weaponTilesetPlacematImage, x, y)
+	--[[love.graphics.draw(weaponTilesetPlacematImage, x, y)
 	self:drawAttributeA(x + tileSize, y)
 	self:drawAttributeB(x + (tileSize*2), y + (tileSize*2))
+	self:drawAttributeC(x, y + (tileSize*2))]]
+
+	love.graphics.draw(weaponTilesetPlacematImage2, x, y)
+	-- 1st row
+	self:drawAttributeA(x, y)
+	self:drawAttributeB(x + (tileSize*2), y)
+	-- 2nd row
+	self:drawAttributeB(x, y + tileSize)
+	self:drawAttributeC(x + (tileSize*2), y + tileSize)
+	-- 3rd row
 	self:drawAttributeC(x, y + (tileSize*2))
+	self:drawAttributeA(x + (tileSize*2), y + (tileSize*2))
 end 
 
 function WeaponTriangle:getRandomAttribute()
