@@ -127,7 +127,7 @@ function SceneGameplay:update(dt)
 	if getKeyPress("q") then 
 		freeCam = not freeCam
 		if freeCam == false then 
-			camera.scale = 2
+			camera.scale = 1.5
 			scaleModified()
 		else 
 			camera.scale = 0.5
@@ -403,9 +403,6 @@ end
 
 
 
-
-
-
 function SceneGameplay:newMap(width, height)
 	currentMap:generate(width, height)
 	local tileX, tileY = camera:getTilePos(tileSize)
@@ -416,8 +413,8 @@ function SceneGameplay:newMap(width, height)
 
   	camera:centreOnPoint(playerController.character.x, playerController.character.y, tileSize, tileSize)
 	--camera:lockToEdgeBoundary(currentMap.width, currentMap.height, tileSize)
-currentMap:placeStairway(currentMap:getTilePosFromWorldPos(playerController.character.x, playerController.character.y, tileSize))
-currentMap:updateMapSpritebatch(tileX, tileY, camera, tileSize)
+	currentMap:placeStairway(currentMap:getTilePosFromWorldPos(playerController.character.x, playerController.character.y, tileSize))
+	currentMap:updateMapSpritebatch(tileX, tileY, camera, tileSize)
 
 	for i=#enemyList,1,-1 do
 		table.remove(enemyList, i)
@@ -475,13 +472,6 @@ function SceneGameplay:drawUI()
 	resetColor()
 
 end 
-
-
---[[function love.wheelmoved(x,y)
-	if camera.scale + (y * 0.25) < 0.5 then return end 
-	camera.scale = camera.scale + (y * 0.25)
-	scaleModified()
-end ]]
 
 function scaleModified()
 	camera:centreOnPoint(

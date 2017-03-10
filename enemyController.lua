@@ -111,7 +111,7 @@ function EnemyController:draw(tileSize, camera)
 	elseif self.enemyType == EnemyType.npc then  
 		love.graphics.draw(self.npcTilesetImage, self.npcTilesetQuads[MoveDirs.down][self.animIndex], relx, rely)	
 	end
-	love.graphics.setColor(255, 255, 255, 220)
+	love.graphics.setColor(255, 255, 255, 240)
 	weaponTriangle:drawAttribute(relx + 8, rely + 8, self.character.weaponAttribute, true)
 	love.graphics.setColor(255, 255, 255, 255)
 end 
