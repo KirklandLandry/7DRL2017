@@ -76,7 +76,7 @@ function SceneMainMenu:update(dt)
 		self.bgm = love.audio.play("assets/audio/darkest deeps title screen.wav", "stream", true)
 	end 
 
-	if getKeyDown("e") then 
+	if getKeyPress("e") then 
 		love.audio.stop(self.bgm)
 		local gameplay = SceneGameplay:new()
 		gameplay:init()
