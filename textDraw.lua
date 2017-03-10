@@ -30,7 +30,6 @@ function initText()
 	textTilesetQuads["-"] = love.graphics.newQuad((26*16) + ((6)*16)	, 48, 16, 16, tilesetWidth, tilesetHeight)
 	textTilesetQuads["="] = love.graphics.newQuad((26*16) + ((7)*16)	, 48, 16, 16, tilesetWidth, tilesetHeight)
 	
-
     local counter = 0
     for i=string.byte("a"),string.byte("z") do
     	textTilesetQuads[string.char(i)] = love.graphics.newQuad(counter * 16, 0, 16, 16, tilesetWidth, tilesetHeight)

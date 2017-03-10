@@ -33,5 +33,7 @@ function SceneOkBox:update(cursorMovement)
 end 
 
 function SceneOkBox:draw()
+	love.graphics.setColor(255,255,255,200)
 	drawMenu(self.x,self.y,self.w,self.h, self.textList)
+	love.graphics.setColor(255,255,255,255)
 end 

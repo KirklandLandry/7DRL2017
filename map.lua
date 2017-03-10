@@ -1,5 +1,5 @@
 local blackTile = love.graphics.newImage("assets/gfx 32x32/black.png")
-local stairTile = love.graphics.newImage("assets/gfx 32x32/stairway 32x32.png")
+--local stairTile = love.graphics.newImage("assets/gfx 32x32/stairway 32x32.png")
 local tilesetImage
 local tilesetQuads
 local tilesetBatch
@@ -21,8 +21,7 @@ function Map:new(mapWidth, mapHeight, tileSize, camera)
 	o.maxShadow = 253
 	o.tileSize = tileSize
 	o.stairway = nil
-
-	stairTile:setFilter("nearest", "nearest")
+	o.chestList = nil
 
 	tilesetImage = love.graphics.newImage("assets/gfx 32x32/cave.png")
 	tilesetImage:setFilter("nearest", "nearest")
@@ -78,6 +77,16 @@ function Map:new(mapWidth, mapHeight, tileSize, camera)
 	tilesetQuads["stairway"] = love.graphics.newQuad(13 * tileSize, 7 * tileSize, tileSize, tileSize,
     	tilesetImage:getWidth(), tilesetImage:getHeight())
 
+	tilesetQuads["chestClosed"] = love.graphics.newQuad(14 * tileSize, 7 * tileSize, tileSize, tileSize,
+    	tilesetImage:getWidth(), tilesetImage:getHeight())
+
+
+	tilesetQuads["chestOpened"] = love.graphics.newQuad(15 * tileSize, 7 * tileSize, tileSize, tileSize,
+    	tilesetImage:getWidth(), tilesetImage:getHeight())
+
+
+
+
 	local displayWidthInTiles, displayHeightInTiles = camera:getViewportSizeInTiles(tileSize)
   	tilesetBatch = love.graphics.newSpriteBatch(tilesetImage, 
   		(displayWidthInTiles + camera.displayBuffer) * (displayHeightInTiles + camera.displayBuffer))
@@ -96,9 +105,9 @@ function Map:generate(width, height)
 	self:tunneler()
 
 	--self:placeStairway()
-
 end
 
+-- and also place T R E A S U R E 
 function Map:placeStairway(cx, cy)
 	--local rx, ry = self:getRandPosition(self.tileSize)
 	local rx, ry = self:getRandPositionExcludingRadius(self.tileSize, nil, 10, cx, cy)
@@ -109,6 +118,45 @@ function Map:placeStairway(cx, cy)
 		worldX = rx,
 		worldY = ry
 	}
+
+
+	self.chestList = {}
+	--tilesetQuads["chest"]
+
+	local cardinal = {}
+	cardinal[1] = {x = 0, y = 1}
+	cardinal[2] = {x = 0, y = -1}
+	cardinal[3] = {x = 1, y = 0}
+	cardinal[4] = {x = -1, y = 0}
+
+	local listOfPossibleChestPlacements = {}
+
+	--local breakout = false
+  	for iy=2,self.height-2 do
+  		for ix=2,self.width-2 do
+			local emptyCounter = 0
+			if self.data[iy][ix] == self.emptyCode and (ix ~= tx and iy ~= ty) and (ix ~= cx and iy ~= cy) then
+				for i=1,#cardinal do
+					if self.data[iy + cardinal[i].y][ix + cardinal[i].x] == self.fillCode then 
+						emptyCounter = emptyCounter + 1
+					end 	
+				end
+				if emptyCounter == 3 then 
+					table.insert(listOfPossibleChestPlacements, {tileX = ix, tileY = iy, opened = false})
+				end
+			end
+			--if #self.chestList > 6 then breakout = true break end 
+  		end 
+  		--if breakout then break end
+  	end 
+
+  	for i=1,6 do
+  		local randIndex = math.random(1, #listOfPossibleChestPlacements)
+  		table.insert(self.chestList, listOfPossibleChestPlacements[randIndex])
+  		table.remove(listOfPossibleChestPlacements, randIndex)
+  	end
+
+
 end 
 
 function Map:onStairway(tx, ty)
@@ -118,6 +166,17 @@ function Map:onStairway(tx, ty)
 		return false 
 	end 
 end 
+
+function Map:onChest( tx, ty )
+	for i=#self.chestList,1,-1 do
+		if tx == self.chestList[i].tileX and ty == self.chestList[i].tileY and self.chestList[i].opened == false then 
+			self.chestList[i].opened = true
+			--table.remove(self.chestList,i)
+			return true 
+		end
+	end
+	return false
+end
 
 --[[function Map:drawStairway()
 	love.graphics.draw(stairTile, , y)
@@ -370,6 +429,7 @@ function updateMapSpritebatch(firstTileX, firstTileY, spritebatch, camera, tileS
 		for x=1,(displayWidthInTiles + camera.displayBuffer) do
 			-- don't draw tiles out of array bounds
 			if not currentMap:outOfBounds(x + firstTileX, y + firstTileY) then
+				
 				if y + firstTileY == currentMap.stairway.tileY and x + firstTileX == currentMap.stairway.tileX then
 
 					spritebatch:add(tilesetQuads["stairway"], 
@@ -394,6 +454,34 @@ function updateMapSpritebatch(firstTileX, firstTileY, spritebatch, camera, tileS
 						spritebatch:add(quadToAdd, ((x-1)*tileSize), ((y-1)*tileSize))
 					end 
 				end 
+
+
+				-- god this is just the worse isn't it. 
+				-- map drawing should be seperated. map should just be raw data so it's reusable
+				local isChest = false
+				local isChestOpened = false
+				for i=#currentMap.chestList,1,-1 do
+					if x + firstTileX == currentMap.chestList[i].tileX and y + firstTileY == currentMap.chestList[i].tileY then 
+						isChest = true 
+						if currentMap.chestList[i].opened then 
+							isChestOpened = true
+						end 
+						break
+					end
+				end
+
+				if isChest then 
+					if isChestOpened then 		 
+						spritebatch:add(tilesetQuads["chestOpened"], 
+							((x-1)*tileSize), 
+							((y-1)*tileSize))
+					else 
+						spritebatch:add(tilesetQuads["chestClosed"], 
+							((x-1)*tileSize), 
+							((y-1)*tileSize))
+					end
+				end
+
 				--tileDrawCount = tileDrawCount + 1 
 			end 
 		end	

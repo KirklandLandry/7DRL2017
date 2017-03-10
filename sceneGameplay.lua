@@ -37,8 +37,10 @@ function SceneGameplay:update(dt)
 		return 
 	end 
 
-	if getKeyPress("c") then 
+	if currentMap:onChest(currentMap:getTilePosFromWorldPos(playerController.character.x, playerController.character.y, tileSize) )then 
 		self:activateChest(playerController)
+		local tileX, tileY = camera:getTilePos(tileSize)
+		currentMap:updateMapSpritebatch(tileX, tileY, camera, tileSize)
 	end 
 
 	if dialogPopup ~= nil then 
@@ -156,12 +158,9 @@ function SceneGameplay:activateChest(player)
 		player.character:incrementXP(statRaise)
 	end 
 
-
-	print(statra)
-
 	dialogPopup = SceneOkBox:new(
-		(screenWidth/2) - (4*32), (screenHeight/2) - (4*32), 8, 8,
-		packTextIntoList("you open the", "chest and are", "enveloped in a", "bright light!", "you've gained", "+"..tostring(statRaise)..stat))
+		(screenWidth/2) - (4*32), (screenHeight/2) - (4*32), 9, 8,
+		packTextIntoList("you open the", "chest and are", "enveloped in a", "bright light!", "you've gained", "+"..tostring(statRaise)..stat, "press e to close"))
 end 
 
 
