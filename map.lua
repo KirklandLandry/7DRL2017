@@ -120,21 +120,18 @@ function Map:placeStairway(cx, cy)
 	}
 
 
+	-- first get a list of all possible tiles to place a chest.
 	self.chestList = {}
-	--tilesetQuads["chest"]
-
 	local cardinal = {}
 	cardinal[1] = {x = 0, y = 1}
 	cardinal[2] = {x = 0, y = -1}
 	cardinal[3] = {x = 1, y = 0}
 	cardinal[4] = {x = -1, y = 0}
-
 	local listOfPossibleChestPlacements = {}
-
-	--local breakout = false
   	for iy=2,self.height-2 do
   		for ix=2,self.width-2 do
 			local emptyCounter = 0
+			-- must be a floor tile. can't be a stair tile. can't be player start tile.
 			if self.data[iy][ix] == self.emptyCode and (ix ~= tx and iy ~= ty) and (ix ~= cx and iy ~= cy) then
 				for i=1,#cardinal do
 					if self.data[iy + cardinal[i].y][ix + cardinal[i].x] == self.fillCode then 
@@ -145,15 +142,16 @@ function Map:placeStairway(cx, cy)
 					table.insert(listOfPossibleChestPlacements, {tileX = ix, tileY = iy, opened = false})
 				end
 			end
-			--if #self.chestList > 6 then breakout = true break end 
   		end 
-  		--if breakout then break end
   	end 
 
-  	for i=1,6 do
+  	-- now choose 3 random tiles and place away
+  	for i=1,3 do
   		local randIndex = math.random(1, #listOfPossibleChestPlacements)
   		table.insert(self.chestList, listOfPossibleChestPlacements[randIndex])
   		table.remove(listOfPossibleChestPlacements, randIndex)
+  		-- break in case there is no more placements left
+  		if # listOfPossibleChestPlacements <=0 then break end 
   	end
 
 
