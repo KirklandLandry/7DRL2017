@@ -267,6 +267,11 @@ function SceneGameplay:draw()
 		playerDialogPopup:draw() 
 	end 
 
+	-- messes with the alpha of drawing a black rect with 0 alpha?
+	--love.graphics.setColor(229, 218, 183, 20)
+	--love.graphics.rectangle("fill", 0,0,screenWidth, screenHeight)
+
+
 end 
 
 --local statTypes = {hp = "hp", xp = "xp", dmg = "dmg"}
@@ -316,7 +321,7 @@ function SceneGameplay:randomHealthRecoveryDialog()
 	elseif rand == 3 then 
 		textList = packTextIntoList("you thank the lost soul as it fades", "back into the darkness...", "everything will be okay.", "press e to close")
 	elseif rand == 4 then 
-		textList = packTextIntoList("you thank the lost soul as it fades", "back into the darkness...", "you remember a pleasant memory...", "press e to close")
+		textList = packTextIntoList("you thank the lost soul as it fades", "back into the darkness...", "you recall a pleasant memory...", "press e to close")
 	end 
 
 	chestDialogPopup = SceneOkBox:new(
