@@ -4,6 +4,7 @@ require "game"
 require "timer"
 require "camera"
 require "textDraw"
+require "sound"
 -- game specific
 require "sceneOkBox"
 require "menuDrawer"
@@ -13,6 +14,7 @@ require "character"
 require "playerController"
 require "enemyController"
 require "sceneGameplay"
+require "sceneMainMenu"
 -- libs
 require "libs/maid64"
 -- data structures 

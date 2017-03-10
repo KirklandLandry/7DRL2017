@@ -13,9 +13,13 @@ function loadGame()
 	initText()
 	initMenuDrawer()
 
-	local scene = SceneGameplay:new()
+
+	local sceneA = SceneMainMenu:new()
+	sceneStack:push(sceneA)
+
+	--[[local scene = SceneGameplay:new()
 	scene:init()
-	sceneStack:push(scene)
+	sceneStack:push(scene)]]
 
 	--[[local scene2 = SceneOkBox:new(packTextIntoList("frog fractions", "is", "real"))
 	scene2:init()

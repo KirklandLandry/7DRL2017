@@ -64,7 +64,7 @@ function PlayerController:attack(enemyIndex, enemyList)
 		if enemyList[enemyIndex].enemyType == EnemyType.npc then 
 			local conversationChance = math.random(0,100)
 			-- the chance to initiate dialog
-			if conversationChance > 60 then 
+			if conversationChance > 63 then 
 				conversationStarted = true 
 			else 
 				self.character:incrementXP(enemyList[enemyIndex].enemyType)
@@ -151,5 +151,14 @@ function PlayerController:update(tileSize, dt, currentMap, enemyList)
 	elseif self.prevDir == nil then 
 		self.animTimer:reset()
 	end 
+
+	--[[if moved then 
+		love.audio.play("assets/audio/steps/mud02.ogg", "static", false, 0.60)
+	end ]]
+
+	if attacked then 
+		love.audio.play("assets/audio/hit.wav", "static", false, 0.30)
+	end 
+
 	return moved, attacked, conversationStarted
 end 

@@ -38,7 +38,7 @@ function Character:lowerHealth(amount)
 end 
 
 function Character:recoverHealth(amount)
-	self.health = self.health - amount
+	self.health = self.health + amount
 	if self.health > self.maxHealth then self.health = self.maxHealth end
 end
 

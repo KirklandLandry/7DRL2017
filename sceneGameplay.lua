@@ -15,12 +15,17 @@ local currentFloor = nil
 local chestDialogPopup = nil
 local enemyDialogPopup = nil
 
+local freeCam = false
+local smoothScrollEnabled = true
+
 SceneGameplay = {}
 function SceneGameplay:new()
 	local o = {}
 	setmetatable(o, self)
 	self.__index = self
-
+	o.bgm = love.audio.play("assets/audio/The_Endless_Journey.mp3", "stream", true)
+	freeCam = false
+	smoothScrollEnabled = true
 	return o
 end 
 
@@ -33,6 +38,7 @@ end
 function SceneGameplay:update(dt)
 	
 	if getKeyDown("h") then 
+		love.audio.stop(self.bgm)
 		sceneStack:pop()
 		return 
 	end 
@@ -56,12 +62,12 @@ function SceneGameplay:update(dt)
 		if getKeyPress("w") then cursorMove = -1 elseif getKeyPress("s") then cursorMove = 1 end
 
 		if enemyDialogPopup:update(cursorMove) then 
-
+			-- add an option where the soul betrays you if you ask for healing
 			if enemyDialogPopup.currentOption == 5 then 
 				playerController.character:incrementXP(EnemyType.npc)
 				self:randomKillDialog()
 			elseif enemyDialogPopup.currentOption == 6 then
-				playerController.character:recoverHealth(math.random(5,10))
+				playerController.character:recoverHealth(math.random(3,6))
 				self:randomHealthRecoveryDialog()
 			end
 			enemyDialogPopup = nil 
@@ -69,10 +75,31 @@ function SceneGameplay:update(dt)
 		return 
 	end 
 
-	-- move camera with arrow keys 
-	camera:moveManually(dt)
-	-- move player with wasd
-	local playerMoved, playerAttacked, playerConversationStarted = playerController:update(tileSize, dt, currentMap, enemyList)
+	if getKeyPress("q") then 
+		freeCam = not freeCam
+		if freeCam == false then 
+			camera.scale = 2
+			scaleModified()
+		else 
+			camera.scale = 0.5
+			scaleModified()
+		end 
+	end  
+
+	if getKeyPress("g") then 
+		smoothScrollEnabled = not smoothScrollEnabled
+	end 
+
+
+	local playerMoved, playerAttacked, playerConversationStarted = false, false, false 
+	if freeCam then 
+		camera:moveManually(dt)
+		camera:lockToEdgeBoundary(currentMap.width, currentMap.height, tileSize)
+	else 
+		-- move player with wasd
+		playerMoved, playerAttacked, playerConversationStarted = playerController:update(tileSize, dt, currentMap, enemyList)
+	end 
+	
 
 	if playerConversationStarted then 
 		--self:activateChest(playerController)
@@ -84,15 +111,21 @@ function SceneGameplay:update(dt)
 	if currentMap:onStairway(currentMap:getTilePosFromWorldPos(playerController.character.x, playerController.character.y, tileSize)) then 
 		self:newMap(61, 61)
 		currentFloor = currentFloor + 1
+		self:nextFloorDialog()
 	end 
 	-- illuminate area around player
 	currentMap:illuminate(5, currentMap:getTilePosFromWorldPos(playerController.character.x, playerController.character.y, tileSize))
 	-- make camera follow player 
-	if getKeyDown("q") then 
-		camera:lerpTowardsPoint(dt, playerController.character.x, playerController.character.y, tileSize, tileSize, 0.03)
-	end
+	if not freeCam then 
+		if smoothScrollEnabled then 
+			camera:lerpTowardsPoint(dt, playerController.character.x, playerController.character.y, tileSize, tileSize, 0.03)
+		else 
+			camera:centreOnPoint(playerController.character.x, playerController.character.y, tileSize, tileSize)
+		end 
+	end 
 	-- generate new map. debug
 	if getKeyPress("f") then 
+		currentFloor = currentFloor + 1
 		SceneGameplay:newMap(61, 61)
 	end 
 	-- prevent camera from scrolling past map boundary
@@ -172,7 +205,7 @@ function SceneGameplay:activateChest(player)
 
 	if randIndex == 1 then 
 		-- raise hp 
-		statRaise = math.random(1,5)
+		statRaise = math.random(1,3)
 		stat = "hp"
 		player.character.health = player.character.health + statRaise
 		player.character.maxHealth = player.character.maxHealth + statRaise
@@ -196,7 +229,7 @@ end
 function SceneGameplay:startEnemyDialog()
 	enemyDialogPopup = SceneOkBox:new(
 		(screenWidth/2) - (10*32), (screenHeight/2) - (4*32), 20, 8,
-		packTextIntoList("'wait!' the lost soul cries out.", "if you spare me, i can heal you.", "you take a moment to consider it's", "offer.", "kill the soul for xp", "accept it's offer of healing", "press e to select"),
+		packTextIntoList("'wait!' the lost soul cries out.", "if you spare me, i can heal you.", "you take a moment to consider its", "offer...", "kill the soul for xp", "accept it's offer of healing", "select with w/s and press e"),
 		5,6)
 end
 
@@ -205,14 +238,36 @@ function SceneGameplay:randomHealthRecoveryDialog()
 	local textList = {}
 	local rand = math.random(1,4)
 	if rand == 1 then 
-		textList = packTextIntoList("you thank the lost soul as it fades", "back into the darkness...", "your soul is filled with warmth")
+		textList = packTextIntoList("you thank the lost soul as it fades", "back into the darkness...", "your soul is filled with warmth.", "press e to close")
 	elseif rand == 2 then 
-		textList = packTextIntoList("you thank the lost soul as it fades", "back into the darkness...", "you wonder how things are back home")
+		textList = packTextIntoList("you thank the lost soul as it fades", "back into the darkness...", "you wonder how things are back home.", "press e to close")
 	elseif rand == 3 then 
-		textList = packTextIntoList("you thank the lost soul as it fades", "back into the darkness...", "everything will be okay")
+		textList = packTextIntoList("you thank the lost soul as it fades", "back into the darkness...", "everything will be okay.", "press e to close")
 	elseif rand == 4 then 
-		textList = packTextIntoList("you thank the lost soul as it fades", "back into the darkness...", "you remember a pleasant memory...")
+		textList = packTextIntoList("you thank the lost soul as it fades", "back into the darkness...", "you remember a pleasant memory...", "press e to close")
 	end 
+
+	chestDialogPopup = SceneOkBox:new(
+		(screenWidth/2) - (10*32), (screenHeight/2) - (4*32), 20, 8,
+		textList)
+end
+
+
+-- this should change messages based on whether you've been killing or sparing enemies
+function SceneGameplay:nextFloorDialog()
+	local textList = {}
+	local rand = math.random(1,5)
+	if rand == 1 then 
+		textList = packTextIntoList("you've descended another floor below", "the surface.", "you wonder how long it's been.", "how deep do these caverns go...", "press e to close")
+	elseif rand == 2 then 
+		textList = packTextIntoList("you've descended another floor below", "the surface.", "you shiver in darkness as your", "torch lights up your surroundings.", "press e to close")
+	elseif rand == 3 then 
+		textList = packTextIntoList("you've descended another floor below", "the surface.", "you question if this was the right", "thing to do...", "press e to close")
+	elseif rand == 4 then 
+		textList = packTextIntoList("you've descended another floor below", "the surface.", "you recall the warmth of home.", "the feeling quickly fades.", "press e to close")
+	elseif rand == 5 then 
+		textList = packTextIntoList("you've descended another floor below", "the surface.", "you step on something unpleasant and", "unmoving.", "you do not look down.", "you must continue.", "press e to close")
+	end  
 
 	chestDialogPopup = SceneOkBox:new(
 		(screenWidth/2) - (10*32), (screenHeight/2) - (4*32), 20, 8,
@@ -223,13 +278,13 @@ function SceneGameplay:randomKillDialog()
 	local textList = {}
 	local rand = math.random(1,4)
 	if rand == 1 then 
-		textList = packTextIntoList("the lost soul lets out a sad sound", "as you strike it down...", "you wonder if they feel pain...")
+		textList = packTextIntoList("the lost soul lets out a sad sound", "as you strike it down...", "you wonder if they feel pain...", "press e to close")
 	elseif rand == 2 then 
-		textList = packTextIntoList("the lost soul lets out a sad sound", "as you strike it down...", "you remember an unpleasant memory...")
+		textList = packTextIntoList("the lost soul lets out a sad sound", "as you strike it down...", "you remember an unpleasant memory...", "press e to close")
 	elseif rand == 3 then 
-		textList = packTextIntoList("the lost soul lets out a sad sound", "as you strike it down...", "your memory becomes hazy for a moment", "you had forgotten something important")
+		textList = packTextIntoList("the lost soul lets out a sad sound", "as you strike it down...", "your memory becomes hazy for a moment.", "you had forgotten something important.", "press e to close")
 	elseif rand == 4 then 
-		textList = packTextIntoList("the lost soul lets out a sad sound", "as you strike it down...", "you feel your stomach begin to knot", "your chest tightens", "but only for a moment")
+		textList = packTextIntoList("the lost soul lets out a sad sound", "as you strike it down...", "you feel your stomach begin to knot.", "your chest tightens.", "but only for a moment.", "press e to close")
 	end 
 
 	chestDialogPopup = SceneOkBox:new(
@@ -261,7 +316,7 @@ function SceneGameplay:newGame()
 	for i=1,30 do	
 		local rx, ry = currentMap:getRandPositionExcludingRadius(tileSize, enemyList, 10, px, py)
 		local rand = math.random(0, 100)
-		if rand < 60 then 
+		if rand < 50 then 
 			table.insert(enemyList, EnemyController:new(10, EnemyType.log, rx, ry))
 		else 
 			table.insert(enemyList, EnemyController:new(10, EnemyType.npc, rx, ry))
@@ -347,10 +402,15 @@ end
 function love.wheelmoved(x,y)
 	if camera.scale + (y * 0.25) < 0.5 then return end 
 	camera.scale = camera.scale + (y * 0.25)
+	scaleModified()
+	print(camera.scale)
+end 
+
+function scaleModified()
 	camera:centreOnPoint(
-		playerController.character.x, 
-		playerController.character.y, 
-		tileSize, tileSize)
+	playerController.character.x, 
+	playerController.character.y, 
+	tileSize, tileSize)
 	-- if scale changes, display size changes, spritebatch size needs to change as well
 	currentMap:resizeSpritebatch(camera, tileSize)
 	-- update tilemap position 
@@ -358,6 +418,4 @@ function love.wheelmoved(x,y)
 	currentMap.prevTileX = tileX
 	currentMap.prevTileY = tileY
 	currentMap:updateMapSpritebatch(tileX, tileY, camera, tileSize)
-	print(camera.scale)
 end 
-

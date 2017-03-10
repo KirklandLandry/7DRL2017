@@ -108,14 +108,14 @@ end ]]
 
 function Camera:moveManually(dt)
 	-- camera control
-	if getKeyDown( "up" ) then
+	if getKeyDown( "w" ) then
 		self.y = self.y - 700 * dt
-	elseif getKeyDown( "down" ) then
+	elseif getKeyDown( "s" ) then
 		self.y = self.y + 700 * dt
 	end
-	if getKeyDown( "left" ) then
+	if getKeyDown( "a" ) then
 		self.x = self.x - 700 * dt
-	elseif getKeyDown( "right" ) then
+	elseif getKeyDown( "d" ) then
 		self.x = self.x + 700 * dt
 	end
 end 

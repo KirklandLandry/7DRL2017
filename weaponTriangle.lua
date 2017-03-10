@@ -304,9 +304,9 @@ function WeaponTriangle:getDamageMultiplier(attacker, defender)
 	elseif attacker == AttributeTypes.a and defender == AttributeTypes.c then 
 		return self.weaknessValue
 	elseif attacker == AttributeTypes.null then 
-		return 0.5
+		return 0.75
 	elseif defender == AttributeTypes.null then 	
-		return 2
+		return 1.75
 	else -- attributes are same, no bonus/weakness
 		return 1
 	end
