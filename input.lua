@@ -10,12 +10,6 @@ local input_debug = true
  
 -- key press callback
 function love.keypressed(key)
-    if input_debug then 
-        if key == "escape" then
-            love.event.quit() 
-        end
-        --print(key)
-    end
     keys[key] = {down = true} 
 end
 

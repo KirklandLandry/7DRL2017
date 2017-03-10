@@ -31,12 +31,48 @@ end
 
 
 function SceneGameplay:init()
+
+	-- this is why I should minimize globals...
+	playerController = nil
+	camera = nil
+	currentMap = nil
+	weaponTriangle = nil 
+	enemyList = {}
+	damageTextList = {}
+	currentFloor = nil
+	chestDialogPopup = nil
+	enemyDialogPopup = nil
+	freeCam = false
+	smoothScrollEnabled = true
+
 	tileSize = globalTileSize
 	self:newGame()
+	scaleModified()
+
+	local textList = packTextIntoList(
+		"as you light your torch, your eyes slowly", 
+		"adjust to the darkness of the cavern.",
+		"chasing a mythical treasure, you were dropped",
+		"in from above. no way out. your only choice is",
+		"to explore and hope the treasure is more than",
+		"just a thing of myths and legends.",
+		"the journey begins.",
+		"",
+		"press escape to open the pause menu.",
+		"press e to close this dialog.")
+	chestDialogPopup = SceneOkBox:new(
+		(screenWidth/2) - (12*32), (screenHeight/2) - (5*32), 24, 11,
+		textList)
+
 end 
 
 function SceneGameplay:update(dt)
 	
+	if getKeyPress( "escape" ) then
+		local sceneA = ScenePause:new()
+		sceneStack:push(sceneA)	
+	end
+
 	if getKeyDown("h") then 
 		love.audio.stop(self.bgm)
 		sceneStack:pop()
@@ -186,7 +222,6 @@ function SceneGameplay:draw()
 
 	self:drawUI()
 
-
 	if chestDialogPopup ~= nil then 
 		chestDialogPopup:draw()
 	end 
@@ -229,7 +264,7 @@ end
 function SceneGameplay:startEnemyDialog()
 	enemyDialogPopup = SceneOkBox:new(
 		(screenWidth/2) - (10*32), (screenHeight/2) - (4*32), 20, 8,
-		packTextIntoList("'wait!' the lost soul cries out.", "if you spare me, i can heal you.", "you take a moment to consider its", "offer...", "kill the soul for xp", "accept it's offer of healing", "select with w/s and press e"),
+		packTextIntoList("'wait!' the lost soul cries out.", "if you spare me, i can heal you.", "you take a moment to consider its", "offer...", "kill the soul for xp", "accept its offer of healing", "select with w/s and press e"),
 		5,6)
 end
 
@@ -390,6 +425,7 @@ function SceneGameplay:drawUI()
 	weaponTriangle:drawAttribute(112, screenHeight - 32 - 8, playerController.character.weaponAttribute)
 	drawText(weaponTriangle:getAttributeName(playerController.character.weaponAttribute), 112 + 36, screenHeight - 32)
 
+	drawText("-player info-", 2, screenHeight - 192)
 	drawText("bfloor:"..tostring(currentFloor), 2, screenHeight - 160)
 	drawText("lvl:"..tostring(playerController.character.level), 2, screenHeight - 128)
 	drawText("hp:"..tostring(playerController.character.health).."/"..tostring(playerController.character.maxHealth), 2, screenHeight - 96)

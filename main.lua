@@ -15,6 +15,7 @@ require "playerController"
 require "enemyController"
 require "sceneGameplay"
 require "sceneMainMenu"
+require "scenePause"
 -- libs
 require "libs/maid64"
 -- data structures 

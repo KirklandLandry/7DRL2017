@@ -28,9 +28,7 @@ function loadGame()
 end
 
 function updateGame(dt)
-	if getKeyDown( "escape" ) then
-		love.event.quit()
-	end
+
 
 	-- quit event won't call immediately, need safeguards for now
 	if sceneStack:peek() == nil then 

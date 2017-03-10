@@ -38,7 +38,6 @@ function SceneMainMenu:new()
 
 	o.enemyList = {}
 
-
 	o.minX = 0
 	o.minY = 0
 	o.maxX = screenWidth - enemyTileSize
@@ -53,6 +52,10 @@ function SceneMainMenu:init()
 end 
 
 function SceneMainMenu:update(dt)
+	if getKeyPress( "escape" ) then
+		sceneStack:pop()
+	end
+
 	for i=#self.enemyList,1,-1 do
 		self.enemyList[i].alpha = self.enemyList[i].alpha - 100 * dt
 		if self.enemyList[i].animTimer:isComplete(dt) then 
@@ -90,8 +93,9 @@ function SceneMainMenu:draw()
 	resetColor()
 	love.graphics.draw(self.titleImage, (screenWidth/2) - (self.titleImage:getWidth()/2) - 4, (screenHeight/2) - (self.titleImage:getHeight()/2) - (screenHeight/4) )
 
-	drawMenu( (screenWidth/2) - (4.5 * 32) - 4, (screenHeight/2) - (self.titleImage:getHeight()/2) - (screenHeight/4) + self.titleImage:getHeight() + 32,
-		9,2, packTextIntoList("press e to start"))
+	drawMenu( (screenWidth/2) - (5.5 * 32) - 4, (screenHeight/2) - (self.titleImage:getHeight()/2) - (screenHeight/4) + self.titleImage:getHeight() + 32,
+		11,3, packTextIntoList("press e to start", "press escape to quit"))
+
 end 
 
 function SceneMainMenu:addEnemy()
