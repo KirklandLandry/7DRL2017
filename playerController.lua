@@ -58,16 +58,30 @@ function PlayerController:attack(enemyIndex, enemyList)
 	local dmg = self.character:getDamage(multiplier)
 	enemyList[enemyIndex].character:lowerHealth(dmg)
 
-	if enemyList[enemyIndex].character.health <= 0 then 
-		self.character:incrementXP(enemyList[enemyIndex].enemyType)
-	end 
+	local conversationStarted = false
 
-	table.insert(damageTextList, {x = enemyList[enemyIndex].character.x, y = enemyList[enemyIndex].character.y - 16, damage = dmg, alpha = 255})
+	if enemyList[enemyIndex].character.health <= 0 then 
+		if enemyList[enemyIndex].enemyType == EnemyType.npc then 
+			local conversationChance = math.random(0,100)
+			if conversationChance > 1 then 
+				conversationStarted = true 
+			else 
+				self.character:incrementXP(enemyList[enemyIndex].enemyType)
+			end 
+		else 
+			self.character:incrementXP(enemyList[enemyIndex].enemyType)
+		end
+	end 
+	if not conversationStarted then 
+		table.insert(damageTextList, {x = enemyList[enemyIndex].character.x, y = enemyList[enemyIndex].character.y - 16, damage = dmg, alpha = 255})
+	end 
+	return conversationStarted
 end 
 
 function PlayerController:collisionCheck(playerTileX, playerTileY, xShift, yShift, tileSize, currentMap, enemyList)
 	local moved = false
 	local attacked = false
+	local conversationStarted = false
 	-- check for collision with walls
 	if currentMap:canMove(playerTileX + xShift, playerTileY + yShift) then 
 		-- check for collision with enemy
@@ -75,15 +89,15 @@ function PlayerController:collisionCheck(playerTileX, playerTileY, xShift, yShif
 			local ex, ey = currentMap:getTilePosFromWorldPos(enemyList[i].character.x, enemyList[i].character.y, tileSize)
 			if playerTileX + xShift == ex and playerTileY + yShift == ey then 
 				-- initiate battle here
-				self:attack(i, enemyList)
+				conversationStarted = self:attack(i, enemyList)
 				attacked = true
-				return moved, attacked 
+				return moved, attacked, conversationStarted
 			end 
 		end
 		self.character:move(tileSize * xShift, tileSize * yShift)
 		moved = true
 	end
-	return moved, attacked
+	return moved, attacked, conversationStarted
 end 
 
 function PlayerController:setDirs(newDir)
@@ -96,32 +110,33 @@ end
 function PlayerController:update(tileSize, dt, currentMap, enemyList)
 	local moved = false
 	local attacked = false
+	local conversationStarted = false
 	local playerTileX, playerTileY = currentMap:getTilePosFromWorldPos(self.character.x, self.character.y, tileSize)
 	if getKeyDown( "w" ) then
 		if self.prevDir == MoveDirs.up then
 			if self.moveTimer:isComplete(dt) then 
-				moved, attacked = self:collisionCheck(playerTileX, playerTileY, 0, -1, tileSize, currentMap, enemyList)
+				moved, attacked, conversationStarted = self:collisionCheck(playerTileX, playerTileY, 0, -1, tileSize, currentMap, enemyList)
 			end	  
 		end 
 		self:setDirs(MoveDirs.up)
 	elseif getKeyDown( "s" ) then
 		if self.prevDir == MoveDirs.down then
 			if self.moveTimer:isComplete(dt) then 
-				moved, attacked = self:collisionCheck(playerTileX, playerTileY, 0, 1, tileSize, currentMap, enemyList)
+				moved, attacked, conversationStarted = self:collisionCheck(playerTileX, playerTileY, 0, 1, tileSize, currentMap, enemyList)
 			end	  
 		end 
 		self:setDirs(MoveDirs.down)
 	elseif getKeyDown( "a" ) then
 		if self.prevDir == MoveDirs.left then
 			if self.moveTimer:isComplete(dt) then 
-				moved, attacked = self:collisionCheck(playerTileX, playerTileY, -1, 0, tileSize, currentMap, enemyList)
+				moved, attacked, conversationStarted = self:collisionCheck(playerTileX, playerTileY, -1, 0, tileSize, currentMap, enemyList)
 			end	  
 		end 
 		self:setDirs(MoveDirs.left)
 	elseif getKeyDown( "d" ) then
 		if self.prevDir == MoveDirs.right then
 			if self.moveTimer:isComplete(dt) then 
-				moved, attacked = self:collisionCheck(playerTileX, playerTileY, 1, 0, tileSize, currentMap, enemyList)
+				moved, attacked, conversationStarted = self:collisionCheck(playerTileX, playerTileY, 1, 0, tileSize, currentMap, enemyList)
 			end	  
 		end 
 		self:setDirs(MoveDirs.right)
@@ -135,6 +150,5 @@ function PlayerController:update(tileSize, dt, currentMap, enemyList)
 	elseif self.prevDir == nil then 
 		self.animTimer:reset()
 	end 
-
-	return moved, attacked
+	return moved, attacked, conversationStarted
 end 

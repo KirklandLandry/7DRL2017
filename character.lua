@@ -37,10 +37,15 @@ function Character:lowerHealth(amount)
 	self.health = self.health - amount
 end 
 
+function Character:recoverHealth(amount)
+	self.health = self.health - amount
+	if self.health > self.maxHealth then self.health = self.maxHealth end
+end
+
 EnemyType = {log = "log", npc = "npc"}
 
 function Character:incrementXP(enemyType)
-	
+
 	if enemyType == EnemyType.log then 
 		self.currentXP = self.currentXP + math.random(10, 15)
 	elseif enemyType == EnemyType.npc then 

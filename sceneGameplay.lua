@@ -12,7 +12,8 @@ local enemyList = {}
 damageTextList = {}
 local currentFloor = nil
 
-local dialogPopup = nil
+local chestDialogPopup = nil
+local enemyDialogPopup = nil
 
 SceneGameplay = {}
 function SceneGameplay:new()
@@ -29,7 +30,6 @@ function SceneGameplay:init()
 	self:newGame()
 end 
 
-
 function SceneGameplay:update(dt)
 	
 	if getKeyDown("h") then 
@@ -43,9 +43,28 @@ function SceneGameplay:update(dt)
 		currentMap:updateMapSpritebatch(tileX, tileY, camera, tileSize)
 	end 
 
-	if dialogPopup ~= nil then 
-		if dialogPopup:update() then 
-			dialogPopup = nil 
+	if chestDialogPopup ~= nil then 
+		if chestDialogPopup:update() then 
+			chestDialogPopup = nil 
+		end 
+		return 
+	end 
+
+	if enemyDialogPopup ~= nil then 
+
+		local cursorMove = 0 
+		if getKeyPress("w") then cursorMove = -1 elseif getKeyPress("s") then cursorMove = 1 end
+
+		if enemyDialogPopup:update(cursorMove) then 
+
+			if enemyDialogPopup.currentOption == 5 then 
+				playerController.character:incrementXP(EnemyType.npc)
+				self:randomKillDialog()
+			elseif enemyDialogPopup.currentOption == 6 then
+				playerController.character:recoverHealth(math.random(5,10))
+				self:randomHealthRecoveryDialog()
+			end
+			enemyDialogPopup = nil 
 		end 
 		return 
 	end 
@@ -53,7 +72,14 @@ function SceneGameplay:update(dt)
 	-- move camera with arrow keys 
 	camera:moveManually(dt)
 	-- move player with wasd
-	local playerMoved, playerAttacked = playerController:update(tileSize, dt, currentMap, enemyList)
+	local playerMoved, playerAttacked, playerConversationStarted = playerController:update(tileSize, dt, currentMap, enemyList)
+
+	if playerConversationStarted then 
+		--self:activateChest(playerController)
+		self:startEnemyDialog() 
+		return
+	end 
+
 	-- if you're on a stairway, move to next floor
 	if currentMap:onStairway(currentMap:getTilePosFromWorldPos(playerController.character.x, playerController.character.y, tileSize)) then 
 		self:newMap(61, 61)
@@ -128,10 +154,14 @@ function SceneGameplay:draw()
 	self:drawUI()
 
 
-	if dialogPopup ~= nil then 
-		dialogPopup:draw()
+	if chestDialogPopup ~= nil then 
+		chestDialogPopup:draw()
 	end 
 	
+	if enemyDialogPopup ~= nil then 
+		enemyDialogPopup:draw()
+	end 
+
 end 
 
 --local statTypes = {hp = "hp", xp = "xp", dmg = "dmg"}
@@ -158,11 +188,54 @@ function SceneGameplay:activateChest(player)
 		player.character:incrementXP(statRaise)
 	end 
 
-	dialogPopup = SceneOkBox:new(
+	chestDialogPopup = SceneOkBox:new(
 		(screenWidth/2) - (4*32), (screenHeight/2) - (4*32), 9, 8,
 		packTextIntoList("you open the", "chest and are", "enveloped in a", "bright light!", "you've gained", "+"..tostring(statRaise)..stat, "press e to close"))
 end 
 
+function SceneGameplay:startEnemyDialog()
+	enemyDialogPopup = SceneOkBox:new(
+		(screenWidth/2) - (10*32), (screenHeight/2) - (4*32), 20, 8,
+		packTextIntoList("'wait!' the lost soul cries out.", "if you spare me, i can heal you.", "you take a moment to consider it's", "offer.", "kill the soul for xp", "accept it's offer of healing", "press e to select"),
+		5,6)
+end
+
+function SceneGameplay:randomHealthRecoveryDialog()
+	
+	local textList = {}
+	local rand = math.random(1,4)
+	if rand == 1 then 
+		textList = packTextIntoList("you thank the lost soul as it fades", "back into the darkness...", "your soul is filled with warmth")
+	elseif rand == 2 then 
+		textList = packTextIntoList("you thank the lost soul as it fades", "back into the darkness...", "you wonder how things are back home")
+	elseif rand == 3 then 
+		textList = packTextIntoList("you thank the lost soul as it fades", "back into the darkness...", "everything will be okay")
+	elseif rand == 4 then 
+		textList = packTextIntoList("you thank the lost soul as it fades", "back into the darkness...", "you remember a pleasant memory...")
+	end 
+
+	chestDialogPopup = SceneOkBox:new(
+		(screenWidth/2) - (10*32), (screenHeight/2) - (4*32), 20, 8,
+		textList)
+end
+
+function SceneGameplay:randomKillDialog()
+	local textList = {}
+	local rand = math.random(1,4)
+	if rand == 1 then 
+		textList = packTextIntoList("the lost soul lets out a sad sound", "as you strike it down...", "you wonder if they feel pain...")
+	elseif rand == 2 then 
+		textList = packTextIntoList("the lost soul lets out a sad sound", "as you strike it down...", "you remember an unpleasant memory...")
+	elseif rand == 3 then 
+		textList = packTextIntoList("the lost soul lets out a sad sound", "as you strike it down...", "your memory becomes hazy for a moment", "you had forgotten something important")
+	elseif rand == 4 then 
+		textList = packTextIntoList("the lost soul lets out a sad sound", "as you strike it down...", "you feel your stomach begin to knot", "your chest tightens", "but only for a moment")
+	end 
+
+	chestDialogPopup = SceneOkBox:new(
+		(screenWidth/2) - (10*32), (screenHeight/2) - (4*32), 20, 8,
+		textList)
+end 
 
 function SceneGameplay:newGame()
 	weaponTriangle = WeaponTriangle:new()
