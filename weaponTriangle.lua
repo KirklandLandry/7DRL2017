@@ -251,12 +251,12 @@ function WeaponTriangle:drawIcon(x, y, ix, iy, drawQuad, small)
 end 
 
 function WeaponTriangle:drawTriangle(x, y)
-	--[[love.graphics.draw(weaponTilesetPlacematImage, x, y)
+	love.graphics.draw(weaponTilesetPlacematImage, x, y)
 	self:drawAttributeA(x + tileSize, y)
 	self:drawAttributeB(x + (tileSize*2), y + (tileSize*2))
-	self:drawAttributeC(x, y + (tileSize*2))]]
+	self:drawAttributeC(x, y + (tileSize*2))
 
-	love.graphics.draw(weaponTilesetPlacematImage2, x, y)
+	--[[love.graphics.draw(weaponTilesetPlacematImage2, x, y)
 	-- 1st row
 	self:drawAttributeA(x, y)
 	self:drawAttributeB(x + (tileSize*2), y)
@@ -265,7 +265,7 @@ function WeaponTriangle:drawTriangle(x, y)
 	self:drawAttributeC(x + (tileSize*2), y + tileSize)
 	-- 3rd row
 	self:drawAttributeC(x, y + (tileSize*2))
-	self:drawAttributeA(x + (tileSize*2), y + (tileSize*2))
+	self:drawAttributeA(x + (tileSize*2), y + (tileSize*2))]]
 end 
 
 function WeaponTriangle:getRandomAttribute()

@@ -14,9 +14,12 @@ local currentFloor = nil
 
 local chestDialogPopup = nil
 local enemyDialogPopup = nil
+local playerDialogPopup = nil
+
 
 local freeCam = false
 local smoothScrollEnabled = true
+
 
 SceneGameplay = {}
 function SceneGameplay:new()
@@ -42,6 +45,7 @@ function SceneGameplay:init()
 	currentFloor = nil
 	chestDialogPopup = nil
 	enemyDialogPopup = nil
+	playerDialogPopup = nil
 	freeCam = false
 	smoothScrollEnabled = true
 
@@ -58,16 +62,25 @@ function SceneGameplay:init()
 		"just a thing of myths and legends.",
 		"the journey begins.",
 		"",
-		"press escape to open the pause menu.",
+		"press escape to open the pause /",
+		"instructions menu.",
 		"press e to close this dialog.")
 	chestDialogPopup = SceneOkBox:new(
-		(screenWidth/2) - (12*32), (screenHeight/2) - (5*32), 24, 11,
+		(screenWidth/2) - (12*32) + 96, (screenHeight/2) - (5*32), 24, 12,
 		textList)
 
 end 
 
 function SceneGameplay:update(dt)
 	
+	if playerDialogPopup ~= nil then 
+		if playerDialogPopup:update() then 
+			love.audio.stop(self.bgm)
+			sceneStack:pop()
+		end 
+		return 
+	end 
+
 	if getKeyPress( "escape" ) then
 		local sceneA = ScenePause:new()
 		sceneStack:push(sceneA)	
@@ -188,6 +201,26 @@ function SceneGameplay:update(dt)
 			table.remove(damageTextList, i)
 		end 
 	end
+
+
+
+	if playerController.character.health <= 0 then 
+		local textList = packTextIntoList(
+		"as the enemy deals the final blow,", 
+		"you feel your strength leave you.",
+		"you made it "..tostring(currentFloor).." floors below, but",
+		"this is it.",
+		"while your vision fades, you wonder",
+		"what the relic was.",
+		"in the end, you'll never know.",
+		"your soul has joined the lost.",
+		"press e to return to title.")
+		playerDialogPopup = SceneOkBox:new(
+			(screenWidth/2) - (10*32) + 32, (screenHeight/2) - (5*32), 20, 11,
+			textList)
+
+	end 
+
 end 
 
 
@@ -230,6 +263,10 @@ function SceneGameplay:draw()
 		enemyDialogPopup:draw()
 	end 
 
+	if playerDialogPopup ~= nil then 
+		playerDialogPopup:draw() 
+	end 
+
 end 
 
 --local statTypes = {hp = "hp", xp = "xp", dmg = "dmg"}
@@ -263,7 +300,7 @@ end
 
 function SceneGameplay:startEnemyDialog()
 	enemyDialogPopup = SceneOkBox:new(
-		(screenWidth/2) - (10*32), (screenHeight/2) - (4*32), 20, 8,
+		(screenWidth/2) - (10*32) + 32, (screenHeight/2) - (4*32), 20, 8,
 		packTextIntoList("'wait!' the lost soul cries out.", "if you spare me, i can heal you.", "you take a moment to consider its", "offer...", "kill the soul for xp", "accept its offer of healing", "select with w/s and press e"),
 		5,6)
 end
@@ -283,7 +320,7 @@ function SceneGameplay:randomHealthRecoveryDialog()
 	end 
 
 	chestDialogPopup = SceneOkBox:new(
-		(screenWidth/2) - (10*32), (screenHeight/2) - (4*32), 20, 8,
+		(screenWidth/2) - (10*32) + 32, (screenHeight/2) - (4*32), 20, 8,
 		textList)
 end
 
@@ -305,7 +342,7 @@ function SceneGameplay:nextFloorDialog()
 	end  
 
 	chestDialogPopup = SceneOkBox:new(
-		(screenWidth/2) - (10*32), (screenHeight/2) - (4*32), 20, 8,
+		(screenWidth/2) - (10*32) + 32, (screenHeight/2) - (4*32), 20, 8,
 		textList)
 end
 
@@ -323,14 +360,14 @@ function SceneGameplay:randomKillDialog()
 	end 
 
 	chestDialogPopup = SceneOkBox:new(
-		(screenWidth/2) - (10*32), (screenHeight/2) - (4*32), 20, 8,
+		(screenWidth/2) - (10*32) + 32, (screenHeight/2) - (4*32), 20, 8,
 		textList)
 end 
 
 function SceneGameplay:newGame()
 	weaponTriangle = WeaponTriangle:new()
 	camera = Camera:new()
-	camera.scale = 2
+	camera.scale = 1.5
 	-- create and generate new map. only need to call new once at start.
 	currentMap = Map:new(21, 29, tileSize, camera)
 	currentMap:generate(61, 61)
@@ -435,12 +472,11 @@ function SceneGameplay:drawUI()
 end 
 
 
-function love.wheelmoved(x,y)
+--[[function love.wheelmoved(x,y)
 	if camera.scale + (y * 0.25) < 0.5 then return end 
 	camera.scale = camera.scale + (y * 0.25)
 	scaleModified()
-	print(camera.scale)
-end 
+end ]]
 
 function scaleModified()
 	camera:centreOnPoint(

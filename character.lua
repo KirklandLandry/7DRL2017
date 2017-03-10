@@ -35,6 +35,7 @@ end
 
 function Character:lowerHealth(amount)
 	self.health = self.health - amount
+	if self.health < 0 then self.health = 0 end 
 end 
 
 function Character:recoverHealth(amount)

@@ -24,7 +24,7 @@
         if type(what) ~= "userdata" or not what:typeOf("Source") then
             src = love.audio.newSource(what, how)
             src:setLooping(loop or false)
-            if volume  ~= nil then src:setVolume(volume) print(adsf) end
+            if volume  ~= nil then src:setVolume(volume) end
         end
  
         play(src)

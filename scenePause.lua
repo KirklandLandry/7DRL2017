@@ -20,20 +20,23 @@ function ScenePause:new()
 		"- gameplay -",
 		"your goal is to find stairways and descend lower in search",
 		"of your goal. what is that? even you don't know...",
+		
 		"bump into enemies to attack.", 
 		"when you attack, surrounding enemies will attack you.",
 		"in the top left corner is the weapon triangle.",
-		"attributes on the left are strong against attributes",
-		"on the right. the inverse is true for weakness",
+		"attributes are strong against the attribute the arrow",
+		"is pointing towards and the inverse is true for weakness",
+
 		"enemy attrbiutes will be shown on top of them.",
 		"if there's no attribute over an enemy, they have no attribute.",
 		"enemies with no attributes are weaker than ones with.",
 		
+		"in the bottom right is your stats.",
+		"you'll want to avoid enemies with attributes strong against",
+		"your attribute and take down ones you're strong against.",
 
 		"",
-		"",
-		"press q to return to title screen.",
-		"press esc to return to resume.",
+		"press q to return to title screen or esc to resume.",
 
 	}
 
