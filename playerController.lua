@@ -63,7 +63,8 @@ function PlayerController:attack(enemyIndex, enemyList)
 	if enemyList[enemyIndex].character.health <= 0 then 
 		if enemyList[enemyIndex].enemyType == EnemyType.npc then 
 			local conversationChance = math.random(0,100)
-			if conversationChance > 1 then 
+			-- the chance to initiate dialog
+			if conversationChance > 60 then 
 				conversationStarted = true 
 			else 
 				self.character:incrementXP(enemyList[enemyIndex].enemyType)
