@@ -1,13 +1,21 @@
 
+-- this is no longer a scene. rename it.
+
 SceneOkBox = {}
-function SceneOkBox:new(textList)
+function SceneOkBox:new(x,y,w,h,textList, acceptKey)
 	local o = {}
 	setmetatable(o, self)
 	self.__index = self
 
 	o.textList = textList
 	o.currentOption = 1
-	o.maxOptions =  #textList
+	o.maxOptions = #textList
+
+	o.x = x 
+	o.y = y
+	o.h = h
+	o.w = w
+	o.acceptKey = acceptKey or "e"
 	return o
 end 
 
@@ -15,12 +23,15 @@ function SceneOkBox:init()
 
 end 
 
-function SceneOkBox:update(dt)
-	if getKeyDown("e") then 
-		sceneStack:pop()
+-- cursor movement should be up or down. +1 or -1
+function SceneOkBox:update(cursorMovement)
+	if getKeyDown(self.acceptKey) then 
+		--sceneStack:pop()
+		return true
 	end 
+	return false
 end 
 
 function SceneOkBox:draw()
-	drawMenu(0,0,15,5, self.textList)
+	drawMenu(self.x,self.y,self.w,self.h, self.textList)
 end 

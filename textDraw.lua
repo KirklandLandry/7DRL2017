@@ -24,6 +24,9 @@ function initText()
 	textTilesetQuads["/"] = love.graphics.newQuad((26*16) + ((5)*16)	, 32, 16, 16, tilesetWidth, tilesetHeight)
 	textTilesetQuads[":"] = love.graphics.newQuad((26*16)				, 48, 16, 16, tilesetWidth, tilesetHeight)
 	textTilesetQuads[","] = love.graphics.newQuad((26*16) + ((2)*16)	, 48, 16, 16, tilesetWidth, tilesetHeight)
+	textTilesetQuads["'"] = love.graphics.newQuad((26*16) + ((3)*16)	, 48, 16, 16, tilesetWidth, tilesetHeight)
+	textTilesetQuads["*"] = love.graphics.newQuad((26*16) + ((4)*16)	, 48, 16, 16, tilesetWidth, tilesetHeight)
+	textTilesetQuads["+"] = love.graphics.newQuad((26*16) + ((5)*16)	, 48, 16, 16, tilesetWidth, tilesetHeight)
 	textTilesetQuads["-"] = love.graphics.newQuad((26*16) + ((6)*16)	, 48, 16, 16, tilesetWidth, tilesetHeight)
 	textTilesetQuads["="] = love.graphics.newQuad((26*16) + ((7)*16)	, 48, 16, 16, tilesetWidth, tilesetHeight)
 	
@@ -40,8 +43,7 @@ function initText()
     		textTilesetQuads[tostring(0)] = love.graphics.newQuad((26*16) + ((i-1)*16), 0, 16, 16, tilesetWidth, tilesetHeight)
     	else 
 			textTilesetQuads[tostring(i)] = love.graphics.newQuad((26*16) + ((i-1)*16), 0, 16, 16, tilesetWidth, tilesetHeight)
-    	end 
-    	
+    	end  	
     end
 
 end 

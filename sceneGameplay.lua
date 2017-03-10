@@ -12,7 +12,7 @@ local enemyList = {}
 damageTextList = {}
 local currentFloor = nil
 
-
+local dialogPopup = nil
 
 SceneGameplay = {}
 function SceneGameplay:new()
@@ -34,6 +34,17 @@ function SceneGameplay:update(dt)
 	
 	if getKeyDown("h") then 
 		sceneStack:pop()
+		return 
+	end 
+
+	if getKeyPress("c") then 
+		self:activateChest(playerController)
+	end 
+
+	if dialogPopup ~= nil then 
+		if dialogPopup:update() then 
+			dialogPopup = nil 
+		end 
 		return 
 	end 
 
@@ -113,11 +124,45 @@ function SceneGameplay:draw()
 	if not getKeyDown("c") then currentMap:drawShadow(camera, tileSize, camera:getTilePos(tileSize)) end
 
 	self:drawUI()
+
+
+	if dialogPopup ~= nil then 
+		dialogPopup:draw()
+	end 
 	
 end 
 
+--local statTypes = {hp = "hp", xp = "xp", dmg = "dmg"}
+function SceneGameplay:activateChest(player)
+	local stat = " nothing"
+	local randIndex = math.random(1,3)
+	local statRaise = 0
+
+	if randIndex == 1 then 
+		-- raise hp 
+		statRaise = math.random(1,5)
+		stat = "hp"
+		player.character.health = player.character.health + statRaise
+		player.character.maxHealth = player.character.maxHealth + statRaise
+	elseif randIndex == 2 then 
+		-- raise strength
+		statRaise = math.random(1,2)
+		stat = "strength"
+		player.character.strength = player.character.strength + statRaise
+	elseif randIndex == 3 then 
+		-- raise xp 
+		statRaise = math.random(10,25)
+		stat = "xp"
+		player.character:incrementXP(statRaise)
+	end 
 
 
+	print(statra)
+
+	dialogPopup = SceneOkBox:new(
+		(screenWidth/2) - (4*32), (screenHeight/2) - (4*32), 8, 8,
+		packTextIntoList("you open the", "chest and are", "enveloped in a", "bright light!", "you've gained", "+"..tostring(statRaise)..stat))
+end 
 
 
 function SceneGameplay:newGame()

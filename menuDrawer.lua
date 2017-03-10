@@ -77,7 +77,6 @@ function drawMenu(x,y,w,h, textList, textCursorOption)
 	if textCursorOption ~= nil then 
 		love.graphics.draw(menuTilesetImage, menuTilesetQuads["cursor"], x, y + 8 + ((textCursorOption-1)*32 )	)
 	end 
-
 end 
 
 function drawCursor()
