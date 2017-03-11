@@ -30,7 +30,7 @@ function ScenePause:new()
 		"if there's no attribute over an enemy, they have no attribute.",
 		"enemies with no attributes are weaker than ones with.",
 		
-		"in the bottom right is your stats.",
+		"in the bottom left is your stats.",
 		"you'll want to avoid enemies with attributes strong against",
 		"your attribute and take down ones you're strong against.",
 
