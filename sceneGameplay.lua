@@ -19,7 +19,7 @@ local playerDialogPopup = nil
 
 local freeCam = false
 local smoothScrollEnabled = true
-
+local zoomedIn = true
 
 SceneGameplay = {}
 function SceneGameplay:new()
@@ -48,6 +48,8 @@ function SceneGameplay:init()
 	playerDialogPopup = nil
 	freeCam = false
 	smoothScrollEnabled = true
+
+	zoomedIn = true
 
 	tileSize = globalTileSize
 	self:newGame()
@@ -127,13 +129,28 @@ function SceneGameplay:update(dt)
 	if getKeyPress("q") then 
 		freeCam = not freeCam
 		if freeCam == false then 
-			camera.scale = 1.5
+			if zoomedIn == true then 
+				camera.scale = 2
+			else 
+				camera.scale = 1
+			end 
+			
 			scaleModified()
 		else 
 			camera.scale = 0.5
 			scaleModified()
 		end 
 	end  
+
+	if not freeCam and getKeyPress("r") then 
+		zoomedIn = not zoomedIn
+		if zoomedIn == true then 
+			camera.scale = 2
+		else 
+			camera.scale = 1
+		end 
+		scaleModified()
+	end 
 
 	if getKeyPress("g") then 
 		smoothScrollEnabled = not smoothScrollEnabled
@@ -372,7 +389,7 @@ end
 function SceneGameplay:newGame()
 	weaponTriangle = WeaponTriangle:new()
 	camera = Camera:new()
-	camera.scale = 1.5
+	camera.scale = 2
 	-- create and generate new map. only need to call new once at start.
 	currentMap = Map:new(21, 29, tileSize, camera)
 	currentMap:generate(61, 61)

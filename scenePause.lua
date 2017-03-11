@@ -11,12 +11,11 @@ function ScenePause:new()
 	o.quitKey = "q"
 
 	o.textItems = {"-- pause menu --",
-		"",
 		"- controls -",
 		"press q to switch between map view and gameplay.",
 		"press g to toggle camera smooth follow.",
+		"press r to toggle camera zoom level.",
 		"use wasd to move.",
-		"",
 		"- gameplay -",
 		"your goal is to find stairways and descend lower in search",
 		"of your goal. what is that? even you don't know...",
