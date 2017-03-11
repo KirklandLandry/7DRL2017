@@ -173,10 +173,34 @@ function SceneGameplay:update(dt)
 		return
 	end 
 
+	-- if you're on the relic, you win 
+	if currentMap:onRelic(currentMap:getTilePosFromWorldPos(playerController.character.x, playerController.character.y, tileSize)) then 
+		
+		local textList = packTextIntoList(
+			"you approach the strange statue. this must be",
+			"it. the reason you came down here. you had",
+			"heard there was something down here that",
+			"could cure you. unsure what else you do, ",
+			"you reach out and touch the relic.",
+			"immediately the statue begins to emit an",
+			"impossibly bright light. everything goes",
+			"white before you wake up at the entrance of",
+			"the cavern. you check your wrist. the mark is",
+			"gone. you're free.",
+			"you begin to head back home.",
+			 "press e to return to main menu")
+
+
+		playerDialogPopup = SceneOkBox:new(
+		(screenWidth/2) - (10*32) + 32, (screenHeight/2) - (5*32), 24, 13, textList)
+	end 
+
+
 	-- if you're on a stairway, move to next floor
 	if currentMap:onStairway(currentMap:getTilePosFromWorldPos(playerController.character.x, playerController.character.y, tileSize)) then 
-		self:newMap(61, 61)
 		currentFloor = currentFloor + 1
+		self:newMap(61, 61)
+		
 		self:nextFloorDialog()
 	end 
 	-- illuminate area around player
@@ -190,10 +214,10 @@ function SceneGameplay:update(dt)
 		end 
 	end 
 	-- generate new map. debug
-	if getKeyPress("f") then 
+	--[[if getKeyPress("f") then 
 		currentFloor = currentFloor + 1
 		SceneGameplay:newMap(61, 61)
-	end 
+	end ]]
 	-- prevent camera from scrolling past map boundary
 	--camera:lockToEdgeBoundary(currentMap.width, currentMap.height, tileSize)
 	camera:update(dt)
@@ -231,6 +255,7 @@ function SceneGameplay:update(dt)
 		"what the relic was.",
 		"in the end, you'll never know.",
 		"your soul has joined the lost.",
+		"",
 		"press e to return to title.")
 		playerDialogPopup = SceneOkBox:new(
 			(screenWidth/2) - (10*32) + 32, (screenHeight/2) - (5*32), 20, 11,
@@ -265,10 +290,9 @@ function SceneGameplay:draw()
 	end
 
 
-	--drawText("heo)-=?", math.floor(playerController.character.x) - roundedCameraX, math.floor(playerController.character.y) - roundedCameraY)
-
-	-- draw the map shadow
-	if not getKeyDown("c") then currentMap:drawShadow(camera, tileSize, camera:getTilePos(tileSize)) end
+	-- draw the map shadow. debug
+	--if not getKeyDown("c") then currentMap:drawShadow(camera, tileSize, camera:getTilePos(tileSize)) end
+	currentMap:drawShadow(camera, tileSize, camera:getTilePos(tileSize))
 
 	self:drawUI()
 
@@ -421,33 +445,50 @@ end
 
 
 function SceneGameplay:newMap(width, height)
-	currentMap:generate(width, height)
+	if currentFloor == 10 then 
+		currentMap:genRelicRoom()
+	else 
+		currentMap:generate(width, height)
+	end 
+	
 	local tileX, tileY = camera:getTilePos(tileSize)
 	currentMap.prevTileX = tileX
 	currentMap.prevTileY = tileY
 	
-	playerController.character.x, playerController.character.y = currentMap:getRandPosition(tileSize)
+	if currentFloor ~= 10 then
+		playerController.character.x, playerController.character.y = currentMap:getRandPosition(tileSize)
+	else
+		playerController.character.x, playerController.character.y = (6 * tileSize), ((currentMap.height - 2) * 32)
+	end 
 
   	camera:centreOnPoint(playerController.character.x, playerController.character.y, tileSize, tileSize)
 	--camera:lockToEdgeBoundary(currentMap.width, currentMap.height, tileSize)
-	currentMap:placeStairway(currentMap:getTilePosFromWorldPos(playerController.character.x, playerController.character.y, tileSize))
+	if currentFloor ~= 10 then 
+		currentMap:placeStairway(currentMap:getTilePosFromWorldPos(playerController.character.x, playerController.character.y, tileSize))
+	end 
 	currentMap:updateMapSpritebatch(tileX, tileY, camera, tileSize)
+
 
 	for i=#enemyList,1,-1 do
 		table.remove(enemyList, i)
 	end 
 	enemyList = {}
-	for i=1,30 do	
-		local px, py = currentMap:getTilePosFromWorldPos(playerController.character.x, playerController.character.y, tileSize)
-		local rx, ry = currentMap:getRandPositionExcludingRadius(tileSize, enemyList, 10, px, py)
-		local rand = math.random(0, 100)
-		if rand < 70 then 
-			table.insert(enemyList, EnemyController:new(10, EnemyType.log, rx, ry))
-		else 
-			table.insert(enemyList, EnemyController:new(10, EnemyType.npc, rx, ry))
-		end 
-		enemyList[i].character:adjustToLevel(playerController.character.level, currentFloor)
-	end
+		
+	if currentFloor ~= 10 then
+		for i=1,30 do	
+			local px, py = currentMap:getTilePosFromWorldPos(playerController.character.x, playerController.character.y, tileSize)
+			local rx, ry = currentMap:getRandPositionExcludingRadius(tileSize, enemyList, 10, px, py)
+			local rand = math.random(0, 100)
+			if rand < 70 then 
+				table.insert(enemyList, EnemyController:new(10, EnemyType.log, rx, ry))
+			else 
+				table.insert(enemyList, EnemyController:new(10, EnemyType.npc, rx, ry))
+			end 
+			enemyList[i].character:adjustToLevel(playerController.character.level, currentFloor)
+		end
+	end 
+
+	
 end 
 
 

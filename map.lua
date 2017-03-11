@@ -22,6 +22,7 @@ function Map:new(mapWidth, mapHeight, tileSize, camera)
 	o.tileSize = tileSize
 	o.stairway = nil
 	o.chestList = nil
+	o.relic = nil
 
 	tilesetImage = love.graphics.newImage("assets/gfx 32x32/cave.png")
 	tilesetImage:setFilter("nearest", "nearest")
@@ -85,6 +86,10 @@ function Map:new(mapWidth, mapHeight, tileSize, camera)
     	tilesetImage:getWidth(), tilesetImage:getHeight())
 
 
+	tilesetQuads["relicTop"] = love.graphics.newQuad(8 * tileSize, 1 * tileSize, tileSize, tileSize,
+    	tilesetImage:getWidth(), tilesetImage:getHeight())
+	tilesetQuads["relicBottom"] = love.graphics.newQuad(8 * tileSize, 2 * tileSize, tileSize, tileSize,
+    	tilesetImage:getWidth(), tilesetImage:getHeight())
 
 
 	local displayWidthInTiles, displayHeightInTiles = camera:getViewportSizeInTiles(tileSize)
@@ -93,6 +98,20 @@ function Map:new(mapWidth, mapHeight, tileSize, camera)
 
 
 	return o
+end 
+
+function Map:genRelicRoom()
+	self.data = {}
+	self.shadowData = {}
+	self.width = 13 
+	self.height = 13
+	self:initEmpty()
+
+
+	self.relic = {
+		tileX = 7,
+		tileY = 7
+	}
 end 
 
 function Map:generate(width, height)
@@ -175,6 +194,15 @@ function Map:onChest( tx, ty )
 	end
 	return false
 end
+
+
+function Map:onRelic(tx, ty)
+	if self.relic ~= nil and tx == self.relic.tileX and ty == self.relic.tileY then 
+		return true 
+	else 
+		return false 
+	end 
+end 
 
 --[[function Map:drawStairway()
 	love.graphics.draw(stairTile, , y)
@@ -428,6 +456,9 @@ function updateMapSpritebatch(firstTileX, firstTileY, spritebatch, camera, tileS
 			-- don't draw tiles out of array bounds
 			if not currentMap:outOfBounds(x + firstTileX, y + firstTileY) then
 				
+
+				
+
 				if y + firstTileY == currentMap.stairway.tileY and x + firstTileX == currentMap.stairway.tileX then
 
 					spritebatch:add(tilesetQuads["stairway"], 
@@ -479,6 +510,20 @@ function updateMapSpritebatch(firstTileX, firstTileY, spritebatch, camera, tileS
 							((y-1)*tileSize))
 					end
 				end
+
+				if currentMap.relic ~= nil then 
+					if y + firstTileY + 1 == currentMap.relic.tileY and x + firstTileX == currentMap.relic.tileX then
+						spritebatch:add(tilesetQuads["relicTop"], 
+								((x-1)*tileSize), 
+								((y-1)*tileSize))
+					elseif y + firstTileY == currentMap.relic.tileY and x + firstTileX == currentMap.relic.tileX then
+						spritebatch:add(tilesetQuads["relicBottom"], 
+								((x-1)*tileSize), 
+								((y-1)*tileSize))
+					end 
+				end 
+
+				
 
 				--tileDrawCount = tileDrawCount + 1 
 			end 
